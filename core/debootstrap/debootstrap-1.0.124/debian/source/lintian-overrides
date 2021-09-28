@@ -1,0 +1,3 @@
+debootstrap source: debian-source-options-has-custom-compression-settings compression = gzip (line *)
+debootstrap source: debian-rules-should-not-use-custom-compression-settings dh_builddeb -pdebootstrap * -- -Zgzip (line *)
+debootstrap source: debian-rules-should-not-use-custom-compression-settings dh_builddeb -pdebootstrap-udeb -- -Zxz (line *)

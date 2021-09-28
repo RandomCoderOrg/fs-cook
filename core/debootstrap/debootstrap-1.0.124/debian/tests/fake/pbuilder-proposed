@@ -1,0 +1,54 @@
+#!/bin/sh
+# fake/pbuilder-proposed -- emulate how pbuilder is proposed to chroot in
+# future.
+#
+# Copyright © 2017 Simon McVittie
+# SPDX-License-Identifier: MIT
+# (see debian/copyright)
+
+set -e
+
+BUILDPLACE="$1"
+shift
+if test -z "$BUILDPLACE" || test -z "$1"; then
+	echo "Usage: $0 CHROOT COMMAND...">&2
+	exit 2
+fi
+
+devpts_options="noexec,nosuid,gid=5,mode=620"
+
+mkdir -p "$BUILDPLACE/dev/pts"
+if ! mount -t devpts none "$BUILDPLACE/dev/pts" -o "$devpts_options,newinstance,ptmxmode=666"; then
+    mount -t devpts none "$BUILDPLACE/dev/pts" -o "$devpts_options"
+fi
+
+mounted_ptmx=no
+
+if [ -e "$BUILDPLACE/dev/pts/ptmx" ] && \
+        ! [ -L "$BUILDPLACE/dev/ptmx" ]; then
+    chmod 666 "$BUILDPLACE/dev/pts/ptmx"
+    mount --bind "$BUILDPLACE/dev/pts/ptmx" "$BUILDPLACE/dev/ptmx"
+    mounted_ptmx=yes
+fi
+
+mounted_console=no
+
+if stdin_tty="$(tty)"; then
+    if [ ! -e "$BUILDPLACE/dev/console" ]; then
+        mknod -m700 "$BUILDPLACE/dev/console" c 5 1
+    fi
+
+    mount --bind "$stdin_tty" "$BUILDPLACE/dev/console"
+    mounted_console=yes
+fi
+
+ls -l "$BUILDPLACE/dev/ptmx" | sed -e 's/^/# fake-pbuilder: /' >&2
+ls -l "$BUILDPLACE/dev/pts/ptmx" | sed -e 's/^/# fake-pbuilder: /' >&2
+
+e=0
+chroot "$BUILDPLACE" "$@" || e=$?
+
+[ "$mounted_console" = no ] || umount "$BUILDPLACE/dev/console"
+[ "$mounted_ptmx" = no ] || umount "$BUILDPLACE/dev/ptmx"
+umount "$BUILDPLACE/dev/pts"
+exit "$e"
