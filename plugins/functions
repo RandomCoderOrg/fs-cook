@@ -1,1 +1,198 @@
 #!/usr/bin/env bash
+
+# sudo check
+if [ "$(id -u)" != "0" ]; then
+    if ! command -v sudo >/dev/null 2>&1; then
+        echo "This script requires sudo or root privileges but none present."
+        exit 1
+    else
+        SUDO="$(command -v sudo)"
+    fi
+fi
+
+die    () { echo -e "?? Error ${*}";exit 1 ;:;}
+warn   () { echo -e "!! ${*}";:;}
+shout  () { echo -e "=> ${*}";:; }
+# lshout () { echo -e "${*}";:; }
+
+do_mount()
+{
+    local chroot_dir=$1
+    depends_on "mount chroot"
+    see_for_directory "$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
+    if is_mounted "$chroot_dir" >> /dev/null; then
+    (   $SUDO mount --rbind /dev "$chroot_dir"/dev
+        $SUDO mount -t sysfs /sys "$chroot_dir"/sys
+        $SUDO mount -t proc /proc "$chroot_dir"/proc 
+    ) ||  die "Couldn't mount..."
+    fi
+}
+
+is_mounted()
+{
+    local chroot_dir=$1
+    if [ -d "$chroot_dir" ]; then
+        if mountpoint -q "$chroot_dir"; then
+            return 0
+        else
+            return 1
+        fi
+    else
+        return 1
+    fi
+}
+
+
+depends_on()
+{
+    local packages="$1"
+    export x
+    for package in ${packages}; do
+        if ! command -v "${package}" &>/dev/null; then
+            warn "Missing package: ${package}"
+            ((x=x+1))
+        fi
+    done
+
+    if ((x>0)); then
+        die "Found missing packages: ${packages}"
+    fi
+}
+
+dpkg_depends_on()
+{
+    local packages="$1"
+    export x
+    for package in ${packages}; do
+        if ! dpkg -s "${package}" &>/dev/null; then
+            warn "Missing package: ${package}"
+            ((x=x+1))
+        fi
+    done
+
+    if ((x>0)); then
+        die "Found missing packages: ${packages}"
+    fi
+}
+
+see_for_directory() {
+    local es=true
+    dirs="$1"
+    x=0
+    for dir in $dirs; do
+        if [ ! -d "$dir" ]; then
+            warn "Missing directory: $dir"
+            ((x=x+1))
+        fi
+    done
+    if ((x>0)); then
+        die "Missing directories: ${dirs}"
+        es=false
+    fi
+}
+
+no_to_directory()
+{
+    dir="$1"
+    if [ -d "$dir" ]; then
+        die "directory exits: $dir"
+    fi
+}
+
+foreign_arch() {
+    arch=$1
+    worker_arch="$(dpkg --print-architecture)"
+    export foreign_worker=false
+    if [ "$arch" != "$worker_arch" ]; then
+        FOREIGN="--foreign"
+        foreign_worker=true
+    fi
+}
+
+do_debootstrap()
+{
+    export target_dir="$1"
+    export arch="$2"
+    foreign_arch "$arch"
+    depends_on "debootstrap"
+    no_to_directory "$target_dir"
+    suite="hirsute" #* need to add more logics for more suits
+    shout "debootstraping $suite to $target_dir"
+
+    ( $SUDO debootstrap \
+            $FOREIGN \
+            --arch="$arch" \
+            --no-check-gpg \
+            $suite \
+            "$target_dir"
+    ) || die "Couldn't debootstrap..."
+
+    if $foreign_worker; then
+        do_second_stage "$target_dir" "$arch"
+    fi
+}
+
+arch_translate()
+{
+    arch=$1
+    export t_arch
+
+    case $arch in
+    arm64|aarch64)
+        t_arch="aarch64"
+        ;;
+    armhf|arm)
+        t_arch="arm"
+        ;;
+    armel)
+        t_arch="armel"
+        ;;
+    amd64|x86_64)
+        t_arch="amd64"
+        ;;
+    i686|i386)
+        t_arch="i386"
+        ;;
+        *) die "arch translator error" ;;
+    esac
+}
+
+do_second_stage()
+{
+    local chroot_dir=$1
+    local arch=$2
+    do_qemu_user_emulation
+    depends_on "chroot"
+    do_chroot_ae "$chroot_dir" "./debootstrap/debootstrap /debootstrap/debootstrap --second-stage"
+}
+
+do_qemu_user_emulation()
+{
+    arch_translate "$arch"
+    if $foreign_worker; then
+        depends_on "qemu-$t_arch-static"
+        $SUDO cp /usr/bin/qemu-"$t_arch"-static "$chroot_dir/usr/bin/"
+    fi
+}
+
+do_chroot_ae()
+{
+    local chroot_dir="$1"
+    local command="$2"
+    depends_on "chroot"
+    do_mount "$chroot_dir"
+    if [ -d "$chroot_dir" ]; then
+        (
+            $SUDO chroot "$chroot_dir" "$command"
+        ) || warn "Couldn't chroot or exited with non zero..."
+    else
+        die "chroot directory doesn't exist: $chroot_dir"
+    fi
+}
+
+run_cmd()
+{
+    local chroot_dir="$1"
+    local command="$2"
+    do_chroot_ae "$chroot_dir" "$command"
+}
