@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
 
-function check_kitchen()
-{
-    :
-}
+source plugins/functions
+source plugins/colrs
