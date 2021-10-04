@@ -10,14 +10,14 @@ export PATH
 
 ###########################################################################
 
-if [ -z "$DEBOOTSTRAP_DIR" ]; then
-	if [ -x /debootstrap/debootstrap ]; then
-		DEBOOTSTRAP_DIR=/debootstrap
-	else
-		DEBOOTSTRAP_DIR=/usr/share/debootstrap
-	fi
-fi
-
+# if [ -z "$DEBOOTSTRAP_DIR" ]; then
+# 	if [ -x /debootstrap/debootstrap ]; then
+# 		DEBOOTSTRAP_DIR=/debootstrap
+# 	else
+# 		DEBOOTSTRAP_DIR=/usr/share/debootstrap
+# 	fi
+# fi
+DEBOOTSTRAP_DIR="core/debootstrap/debootstrap"
 . "$DEBOOTSTRAP_DIR/functions"
 exec 4>&1
 
