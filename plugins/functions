@@ -95,7 +95,9 @@ no_to_directory()
 {
     dir="$1"
     if [ -d "$dir" ]; then
-        die "directory exits: $dir"
+        if ! $NO_DIR_CHECK_OVERRIDE; then
+            die "directory exits: $dir"
+        fi
     fi
 }
 
@@ -163,7 +165,7 @@ do_second_stage()
     local arch=$2
     do_qemu_user_emulation
     depends_on "chroot"
-    do_chroot_ae "$chroot_dir" "./debootstrap/debootstrap /debootstrap/debootstrap --second-stage"
+    do_chroot_ae "$chroot_dir" "/debootstrap/debootstrap --second-stage"
 }
 
 do_qemu_user_emulation()
