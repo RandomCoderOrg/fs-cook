@@ -165,7 +165,7 @@ do_second_stage()
     local arch=$2
     do_qemu_user_emulation
     depends_on "chroot"
-    do_chroot_ae "$chroot_dir" "/debootstrap/debootstrap --second-stage"
+    do_chroot_ae "$chroot_dir" /bin/bash /debootstrap/debootstrap --second-stage
 }
 
 do_qemu_user_emulation()
@@ -180,12 +180,13 @@ do_qemu_user_emulation()
 do_chroot_ae()
 {
     local chroot_dir="$1"
-    local command="$2"
+    shift
+    local command=$@
     depends_on "chroot"
     do_mount "$chroot_dir"
     if [ -d "$chroot_dir" ]; then
         (
-            $SUDO chroot "$chroot_dir" "$command"
+            $SUDO chroot "$chroot_dir" $command
         ) || warn "Couldn't chroot or exited with non zero..."
     else
         die "chroot directory doesn't exist: $chroot_dir"
