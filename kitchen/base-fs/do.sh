@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # incomplete template
 
-source ../../plugins/functios.sh
+source ../../plugins/functions
 
 do_debootstrap "../../fs-arm64" "arm64"
