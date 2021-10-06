@@ -10,26 +10,35 @@ if [ "$(id -u)" != "0" ]; then
     fi
 fi
 
-die    () { echo -e "?? Error ${*}";exit 1 ;:;}
-warn   () { echo -e "!! ${*}";:;}
-shout  () { echo -e "=> ${*}";:; }
+die() {
+    echo -e "?? Error ${*}"
+    exit 1
+    :
+}
+warn() {
+    echo -e "!! ${*}"
+    :
+}
+shout() {
+    echo -e "=> ${*}"
+    :
+}
 # lshout () { echo -e "${*}";:; }
 
-do_mount()
-{
+do_mount() {
     local chroot_dir=$1
     depends_on "mount chroot"
     see_for_directory "$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
-    if is_mounted "$chroot_dir" >> /dev/null; then
-    (   $SUDO mount --rbind /dev "$chroot_dir"/dev
-        $SUDO mount -t sysfs /sys "$chroot_dir"/sys
-        $SUDO mount -t proc /proc "$chroot_dir"/proc 
-    ) ||  die "Couldn't mount..."
+    if is_mounted "$chroot_dir" >>/dev/null; then
+        (
+            $SUDO mount --rbind /dev "$chroot_dir"/dev
+            $SUDO mount -t sysfs /sys "$chroot_dir"/sys
+            $SUDO mount -t proc /proc "$chroot_dir"/proc
+        ) || die "Couldn't mount..."
     fi
 }
 
-is_mounted()
-{
+is_mounted() {
     local chroot_dir=$1
     if [ -d "$chroot_dir" ]; then
         if mountpoint -q "$chroot_dir"; then
@@ -42,35 +51,32 @@ is_mounted()
     fi
 }
 
-
-depends_on()
-{
+depends_on() {
     local packages="$1"
     export x
     for package in ${packages}; do
         if ! command -v "${package}" &>/dev/null; then
             warn "Missing package: ${package}"
-            ((x=x+1))
+            ((x = x + 1))
         fi
     done
 
-    if ((x>0)); then
+    if ((x > 0)); then
         die "Found missing packages: ${packages}"
     fi
 }
 
-dpkg_depends_on()
-{
+dpkg_depends_on() {
     local packages="$1"
     export x
     for package in ${packages}; do
         if ! dpkg -s "${package}" &>/dev/null; then
             warn "Missing package: ${package}"
-            ((x=x+1))
+            ((x = x + 1))
         fi
     done
 
-    if ((x>0)); then
+    if ((x > 0)); then
         die "Found missing packages: ${packages}"
     fi
 }
@@ -82,17 +88,16 @@ see_for_directory() {
     for dir in $dirs; do
         if [ ! -d "$dir" ]; then
             warn "Missing directory: $dir"
-            ((x=x+1))
+            ((x = x + 1))
         fi
     done
-    if ((x>0)); then
+    if ((x > 0)); then
         die "Missing directories: ${dirs}"
         es=false
     fi
 }
 
-no_to_directory()
-{
+no_to_directory() {
     dir="$1"
     if [ -d "$dir" ]; then
         if ! $NO_DIR_CHECK_OVERRIDE; then
@@ -111,8 +116,7 @@ foreign_arch() {
     fi
 }
 
-do_debootstrap()
-{
+do_debootstrap() {
     export target_dir="$1"
     export arch="$2"
     foreign_arch "$arch"
@@ -121,7 +125,8 @@ do_debootstrap()
     suite="hirsute" #* need to add more logics for more suits
     shout "debootstraping $suite to $target_dir"
 
-    ( $SUDO debootstrap \
+    (
+        $SUDO debootstrap \
             $FOREIGN \
             --arch="$arch" \
             --no-check-gpg \
@@ -134,33 +139,31 @@ do_debootstrap()
     fi
 }
 
-arch_translate()
-{
+arch_translate() {
     arch=$1
     export t_arch
 
     case $arch in
-    arm64|aarch64)
+    arm64 | aarch64)
         t_arch="aarch64"
         ;;
-    armhf|arm)
+    armhf | arm)
         t_arch="arm"
         ;;
     armel)
         t_arch="armel"
         ;;
-    amd64|x86_64)
+    amd64 | x86_64)
         t_arch="amd64"
         ;;
-    i686|i386)
+    i686 | i386)
         t_arch="i386"
         ;;
-        *) die "arch translator error" ;;
+    *) die "arch translator error" ;;
     esac
 }
 
-do_second_stage()
-{
+do_second_stage() {
     local chroot_dir=$1
     local arch=$2
     do_qemu_user_emulation
@@ -168,8 +171,7 @@ do_second_stage()
     do_chroot_ae "$chroot_dir" /bin/bash /debootstrap/debootstrap --second-stage
 }
 
-do_qemu_user_emulation()
-{
+do_qemu_user_emulation() {
     arch_translate "$arch"
     if $foreign_worker; then
         depends_on "qemu-$t_arch-static"
@@ -177,8 +179,7 @@ do_qemu_user_emulation()
     fi
 }
 
-do_chroot_ae()
-{
+do_chroot_ae() {
     local chroot_dir="$1"
     shift
     local command=$@
@@ -193,8 +194,7 @@ do_chroot_ae()
     fi
 }
 
-run_cmd()
-{
+run_cmd() {
     local chroot_dir="$1"
     local command="$2"
     do_chroot_ae "$chroot_dir" "$command"
