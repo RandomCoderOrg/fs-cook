@@ -242,6 +242,7 @@ do_tar_bzip()
 {
     shout "starting compression..."
     cp "plugins/j-packer.sh" "${chroot_dir}"
+    do_chroot_ae "$chroot_dir" "chmod +x /j-packer.sh"
     do_chroot_ae \
         "$chroot_dir" \
         "/bin/bash /j-packer.sh ${chroot-dir}.tar.xz"
