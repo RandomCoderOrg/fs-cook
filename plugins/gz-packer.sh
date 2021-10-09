@@ -2,6 +2,7 @@
 
 target=$1
 target_source=/
+# target_source=
 
 tar \
     --exclude="${target_source}"/dev/* \
@@ -12,4 +13,4 @@ tar \
     -cpf \
      - "${target_source}" -P \
     | pv -s $(($(du -sk "${target_source}" | awk '{print $1}') * 1024)) |\
-     bzip2 > "${target}".tar.xz
+     gzip > "${target}".tar.gz
