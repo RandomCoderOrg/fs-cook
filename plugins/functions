@@ -116,9 +116,21 @@ foreign_arch() {
     fi
 }
 
+includes_packages()
+{
+    # comma sperated values
+    includes="bzip2 pv ${INCLUDE_PACKAGES}"
+    # environment variable INCLUDE_PACKAGES
+    export includes
+    for item in $includes; do
+        include_final="$include_final,$item"
+    done
+}
+
 do_debootstrap() {
     export target_dir="$1"
     export arch="$2"
+    includes_packages
     foreign_arch "$arch"
     depends_on "debootstrap"
     no_to_directory "$target_dir"
@@ -130,12 +142,17 @@ do_debootstrap() {
             $FOREIGN \
             --arch="$arch" \
             --no-check-gpg \
+            --include="${include_final}"
             $suite \
             "$target_dir"
     ) || die "Couldn't debootstrap..."
 
     if $foreign_worker; then
         do_second_stage "$target_dir" "$arch"
+    fi
+
+    if ! $no_compression; then
+        do_tar bzip
     fi
 }
 
@@ -192,6 +209,44 @@ do_chroot_ae() {
     else
         die "chroot directory doesn't exist: $chroot_dir"
     fi
+}
+
+do_tar()
+{
+    #compression
+    allowed_compression_types="bzip gzip"
+    if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
+        case $1 in
+        bzip) do_tar_bzip ;;
+        gzip) do_tar_gzip ;;
+        esac
+    else
+        shout "Defaulting to bzip..."
+        do_tar_bzip
+    fi
+
+}
+
+do_tar_gzip()
+{
+    shout "starting compression..."
+    cp "plugins/gz-packer.sh" "${chroot_dir}"
+    do_chroot_ae "$chroot_dir" "chmod +x /gz-packer.sh"
+    do_chroot_ae \
+        "$chroot_dir" \
+        "/gz-packer.sh ${chroot-dir}.tar.gz"
+    cp "${chroot_dir}/${chroot_dir}.tar.gz" output
+}
+
+do_tar_bzip()
+{
+    shout "starting compression..."
+    cp "plugins/j-packer.sh" "${chroot_dir}"
+    do_chroot_ae "$chroot_dir" "chmod +x /j-packer.sh"
+    do_chroot_ae \
+        "$chroot_dir" \
+        "/bin/bash /j-packer.sh ${chroot-dir}.tar.xz"
+    cp "${chroot_dir}/${chroot_dir}.tar.xz" output 
 }
 
 run_cmd() {
