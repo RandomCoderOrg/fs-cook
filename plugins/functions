@@ -144,7 +144,7 @@ do_debootstrap() {
             $FOREIGN \
             --arch="$arch" \
             --no-check-gpg \
-            --include="${include_final}"
+            --include="${include_final}" \
             $suite \
             "$target_dir"
     ) || die "Couldn't debootstrap..."
