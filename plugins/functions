@@ -129,7 +129,7 @@ includes_packages()
         include_final="$include_final,$item"
         ((x=x+1))
     done
-    shout "$x includes processed.."
+    shout "$x includes processed "
 }
 
 do_debootstrap() {
@@ -260,4 +260,4 @@ run_cmd() {
     do_chroot_ae "$chroot_dir" "$command"
 }
 
-trap 'die ' HUP INT TERM
+trap 'die exiting gracefully' HUP INT TERM
