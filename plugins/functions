@@ -12,7 +12,9 @@ fi
 
 die() {
     echo -e "?? Error ${*}"
-    exit 1
+    if ! $NO_EXIT; then
+      exit 1
+    fi
     :
 }
 warn() {
@@ -246,7 +248,7 @@ do_tar_bzip()
     do_chroot_ae \
         "$chroot_dir" \
         "/bin/bash /j-packer.sh ${chroot-dir}.tar.xz"
-    cp "${chroot_dir}/${chroot_dir}.tar.xz" output 
+    cp "${chroot_dir}/${chroot_dir}.tar.xz" output
 }
 
 run_cmd() {
