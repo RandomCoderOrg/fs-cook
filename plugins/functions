@@ -124,9 +124,12 @@ includes_packages()
     includes="bzip2 pv ${INCLUDE_PACKAGES}"
     # environment variable INCLUDE_PACKAGES
     export includes
+    x=0
     for item in $includes; do
         include_final="$include_final,$item"
+        ((x=x+1))
     done
+    shout "$x includes processed.."
 }
 
 do_debootstrap() {
@@ -256,3 +259,5 @@ run_cmd() {
     local command="$2"
     do_chroot_ae "$chroot_dir" "$command"
 }
+
+trap 'die ' HUP INT TERM
