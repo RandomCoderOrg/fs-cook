@@ -137,7 +137,6 @@ do_debootstrap() {
     export arch="$2"
     includes_packages
     foreign_arch "$arch"
-    depends_on "debootstrap"
     no_to_directory "$target_dir"
     suite="hirsute" #* need to add more logics for more suits
     shout "debootstraping $suite to $target_dir"
