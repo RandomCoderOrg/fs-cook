@@ -29,7 +29,6 @@ shout() {
 
 do_mount() {
     local chroot_dir=$1
-    depends_on "mount chroot"
     see_for_directory "$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
     if is_mounted "$chroot_dir" >>/dev/null; then
         (
@@ -203,7 +202,6 @@ do_chroot_ae() {
     local chroot_dir="$1"
     shift
     local command=$@
-    depends_on "chroot"
     do_mount "$chroot_dir"
     if [ -d "$chroot_dir" ]; then
         (
