@@ -142,7 +142,7 @@ do_debootstrap() {
     shout "debootstraping $suite to $target_dir"
 
     (
-        $SUDO debootstrap \
+        $SUDO ./core/debootstrap/debootstrap/debootstrap \
             $FOREIGN \
             --arch="$arch" \
             --no-check-gpg \
@@ -188,7 +188,6 @@ do_second_stage() {
     local chroot_dir=$1
     local arch=$2
     do_qemu_user_emulation
-    depends_on "chroot"
     do_chroot_ae "$chroot_dir" /bin/bash /debootstrap/debootstrap --second-stage
 }
 
