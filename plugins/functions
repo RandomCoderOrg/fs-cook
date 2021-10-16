@@ -186,7 +186,7 @@ do_second_stage() {
     local chroot_dir=$1
     local arch=$2
     do_qemu_user_emulation
-    do_chroot_ae "$chroot_dir" /bin/bash /debootstrap/debootstrap --second-stage
+    do_chroot_ae "$chroot_dir" "/bin/bash /debootstrap/debootstrap --second-stage"
 }
 
 do_qemu_user_emulation() {
@@ -204,7 +204,7 @@ do_chroot_ae() {
     do_mount "$chroot_dir"
     if [ -d "$chroot_dir" ]; then
         (
-            $SUDO chroot "$chroot_dir" $command
+            $SUDO chroot "$chroot_dir" "$command"
         ) || warn "Couldn't chroot or exited with non zero..."
     else
         die "chroot directory doesn't exist: $chroot_dir"
@@ -213,7 +213,6 @@ do_chroot_ae() {
 
 do_tar() {
     #compression
-    allowed_compression_types="bzip gzip"
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
         case $1 in
         bzip2) do_tar_bzip ;;
@@ -235,9 +234,13 @@ do_tar() {
 do_tar_lz4() {
     shout "starting compression..."
     cp "plugins/lz-packer.sh" "${chroot_dir}"
-    do_chroot_ae "$chroot_dir" "chmod +x /lz-packer.sh"
-    do_chroot_ae \
-        "$chroot_dir" \
+    
+    do_chroot_ae            \
+     "$chroot_dir"          \
+     "chmod +x /lz-packer.sh"
+    
+    do_chroot_ae            \
+        "$chroot_dir"       \
         "/gz-packer.sh ${chroot-dir}.lz"
     cp "${chroot_dir}/${chroot_dir}.lz" output
 }
@@ -245,7 +248,11 @@ do_tar_lz4() {
 do_tar_gzip() {
     shout "starting compression..."
     cp "plugins/gz-packer.sh" "${chroot_dir}"
-    do_chroot_ae "$chroot_dir" "chmod +x /gz-packer.sh"
+    
+    do_chroot_ae \
+    "$chroot_dir" \
+    "chmod +x /gz-packer.sh"
+    
     do_chroot_ae \
         "$chroot_dir" \
         "/gz-packer.sh ${chroot-dir}.tar.gz"
@@ -255,7 +262,9 @@ do_tar_gzip() {
 do_tar_bzip() {
     shout "starting compression..."
     cp "plugins/j-packer.sh" "${chroot_dir}"
-    do_chroot_ae "$chroot_dir" "chmod +x /j-packer.sh"
+    do_chroot_ae \
+        "$chroot_dir" \
+        "chmod +x /j-packer.sh"
     do_chroot_ae \
         "$chroot_dir" \
         "/bin/bash /j-packer.sh ${chroot-dir}.tar.xz"
@@ -267,5 +276,3 @@ run_cmd() {
     local command="$2"
     do_chroot_ae "$chroot_dir" "$command"
 }
-
-trap 'die exiting gracefully' HUP INT TERM
