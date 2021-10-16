@@ -13,7 +13,7 @@ fi
 die() {
     echo -e "?? Error ${*}"
     if $ENABLE_EXIT; then
-      exit 1
+        exit 1
     fi
     :
 }
@@ -117,8 +117,7 @@ foreign_arch() {
     fi
 }
 
-includes_packages()
-{
+includes_packages() {
     # comma sperated values
     includes="bzip2 pv ${INCLUDE_PACKAGES}"
     # environment variable INCLUDE_PACKAGES
@@ -126,7 +125,7 @@ includes_packages()
     x=0
     for item in $includes; do
         include_final="$include_final,$item"
-        ((x=x+1))
+        ((x = x + 1))
     done
     shout "$x includes processed "
 }
@@ -212,8 +211,7 @@ do_chroot_ae() {
     fi
 }
 
-do_tar()
-{
+do_tar() {
     #compression
     allowed_compression_types="bzip gzip"
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
@@ -221,9 +219,11 @@ do_tar()
         bzip2) do_tar_bzip ;;
         gzip) do_tar_gzip ;;
         lz) do_tar_lz4 ;;
-        *) shout "Unknown compression type"
-           shout "all compression: lz,gzip,bzip2"
-           die "Giving up!!" ;;
+        *)
+            shout "Unknown compression type"
+            shout "all compression: lz,gzip,bzip2"
+            die "Giving up!!"
+            ;;
         esac
     else
         shout "Defaulting to bzip..."
@@ -232,8 +232,7 @@ do_tar()
 
 }
 
-do_tar_lz4()
-{
+do_tar_lz4() {
     shout "starting compression..."
     cp "plugins/lz-packer.sh" "${chroot_dir}"
     do_chroot_ae "$chroot_dir" "chmod +x /lz-packer.sh"
@@ -243,9 +242,7 @@ do_tar_lz4()
     cp "${chroot_dir}/${chroot_dir}.lz" output
 }
 
-
-do_tar_gzip()
-{
+do_tar_gzip() {
     shout "starting compression..."
     cp "plugins/gz-packer.sh" "${chroot_dir}"
     do_chroot_ae "$chroot_dir" "chmod +x /gz-packer.sh"
@@ -255,8 +252,7 @@ do_tar_gzip()
     cp "${chroot_dir}/${chroot_dir}.tar.gz" output
 }
 
-do_tar_bzip()
-{
+do_tar_bzip() {
     shout "starting compression..."
     cp "plugins/j-packer.sh" "${chroot_dir}"
     do_chroot_ae "$chroot_dir" "chmod +x /j-packer.sh"
