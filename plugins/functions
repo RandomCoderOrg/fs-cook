@@ -202,7 +202,7 @@ do_second_stage() {
 do_qemu_user_emulation() {
     arch_translate "$arch"
     if $foreign_worker; then
-        depends_on "qemu-$t_arch-static"
+        dpkg_depends_on "qemu-user-static"
         $SUDO cp /usr/bin/qemu-"$t_arch"-static "$chroot_dir/usr/bin/"
     fi
 }
