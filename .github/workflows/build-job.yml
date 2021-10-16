@@ -9,12 +9,12 @@ jobs:
     steps:
     - name: clone repos
       uses: actions/checkout@v2
-    - name: test fs
-      run: ls -la
-    - name: create FS
-      run: core/default/fs.sh
     - name: Install dependencies
       run: sudo apt install -y binfmt-support qemu-user-static
+    - name: where is qemu-aarch64-static
+      run: command -v qemu-aarch64-static
+    - name: create FS
+      run: core/default/fs.sh
     - name: upload artifact
       uses: actions/upload-artifact@v2
       with:
