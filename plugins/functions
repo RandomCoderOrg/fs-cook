@@ -134,11 +134,19 @@ do_debootstrap() {
     export target_dir="$1"
     export arch="$2"
     local no_compression
+
     includes_packages
     foreign_arch "$arch"
     no_to_directory "$target_dir"
+
     suite="hirsute" #* need to add more logics for more suits
     shout "debootstraping $suite to $target_dir"
+
+    if [ -n $OVERRIDER_MIRROR ]; then
+      MIRROR="$OVERRIDER_MIRROR"
+    else
+      MIRROR="http://ports.ubuntu.com/ubuntu-ports/"
+    fi
 
     (
         $SUDO ./core/debootstrap/debootstrap \
@@ -147,7 +155,8 @@ do_debootstrap() {
             --no-check-gpg \
             --include="${include_final}" \
             $suite \
-            "$target_dir"
+            "$target_dir" \
+            $MIRROR
     ) || die "Couldn't debootstrap..."
 
     if $foreign_worker; then
@@ -235,11 +244,11 @@ do_tar() {
 do_tar_lz4() {
     shout "starting compression..."
     cp "plugins/lz-packer.sh" "${chroot_dir}"
-    
+
     do_chroot_ae            \
      "$chroot_dir"          \
      "chmod +x /lz-packer.sh"
-    
+
     do_chroot_ae            \
         "$chroot_dir"       \
         "/gz-packer.sh ${chroot-dir}.lz"
@@ -249,11 +258,11 @@ do_tar_lz4() {
 do_tar_gzip() {
     shout "starting compression..."
     cp "plugins/gz-packer.sh" "${chroot_dir}"
-    
+
     do_chroot_ae \
     "$chroot_dir" \
     "chmod +x /gz-packer.sh"
-    
+
     do_chroot_ae \
         "$chroot_dir" \
         "/gz-packer.sh ${chroot-dir}.tar.gz"
