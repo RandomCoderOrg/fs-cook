@@ -217,7 +217,7 @@ do_chroot_ae() {
     do_mount "$chroot_dir"
     if [ -d "$chroot_dir" ]; then
         (
-            $SUDO chroot "$chroot_dir" "$command"
+            $SUDO chroot "$chroot_dir" $command
         ) || warn "Couldn't chroot or exited with non zero..."
     else
         die "chroot directory doesn't exist: $chroot_dir"
