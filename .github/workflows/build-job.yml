@@ -9,6 +9,8 @@ jobs:
     steps:
     - name: clone repos
       uses: actions/checkout@v2
+    - name: test fs
+      run: ls -la
     - name: create FS
       run: core/default/fs.sh
     - name: Install dependencies
