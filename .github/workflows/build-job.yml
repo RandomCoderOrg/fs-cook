@@ -14,7 +14,7 @@ jobs:
     - name: where is qemu-aarch64-static
       run: command -v qemu-aarch64-static
     - name: create FS
-      run: core/default/fs.sh
+      run: bash -x core/default/fs.sh
     - name: upload artifact
       uses: actions/upload-artifact@v2
       with:
