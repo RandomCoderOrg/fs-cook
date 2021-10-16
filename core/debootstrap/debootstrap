@@ -10,14 +10,17 @@ export PATH
 
 ###########################################################################
 
-# if [ -z "$DEBOOTSTRAP_DIR" ]; then
-# 	if [ -x /debootstrap/debootstrap ]; then
-# 		DEBOOTSTRAP_DIR=/debootstrap
-# 	else
-# 		DEBOOTSTRAP_DIR=/usr/share/debootstrap
-# 	fi
-# fi
-DEBOOTSTRAP_DIR="core/debootstrap"
+if [ -d ../../core ]; then
+	DEBOOTSTRAP_DIR="core/debootstrap"
+else
+	if [ -z "$DEBOOTSTRAP_DIR" ]; then
+		if [ -x /debootstrap/debootstrap ]; then
+			DEBOOTSTRAP_DIR=/debootstrap
+		else
+			DEBOOTSTRAP_DIR=/usr/share/debootstrap
+		fi
+	fi
+fi
 . "$DEBOOTSTRAP_DIR/functions"
 exec 4>&1
 
@@ -407,10 +410,10 @@ if [ $# != 0 ] ; then
 			CERTIFICATE="--certificate=$2"
 			shift 2
 		elif [ "$1" != "${1#--certificate=}" ]; then
-			CERTIFICATE="--certificate=${1#--certificate=}" 
+			CERTIFICATE="--certificate=${1#--certificate=}"
 			shift 1
 		else
-		       error 1 NEEDARG "option requires an argument %s" "$1" 
+		       error 1 NEEDARG "option requires an argument %s" "$1"
 		fi
 		;;
 	    --private-key|--private-key=?*)
@@ -418,10 +421,10 @@ if [ $# != 0 ] ; then
 			PRIVATEKEY="--private-key=$2"
 			shift 2
 		elif [ "$1" != "${1#--private-key=}" ]; then
-			PRIVATEKEY="--private-key=${1#--private-key=}" 
+			PRIVATEKEY="--private-key=${1#--private-key=}"
 			shift 1
 		else
-		       error 1 NEEDARG "option requires an argument %s" "$1" 
+		       error 1 NEEDARG "option requires an argument %s" "$1"
 		fi
 		;;
 	    --no-check-certificate)
