@@ -243,7 +243,7 @@ do_tar_lz4() {
     do_chroot_ae            \
         "$chroot_dir"       \
         "/gz-packer.sh ${chroot-dir}.lz"
-    cp "${chroot_dir}/${chroot_dir}.lz" output
+    cp "${chroot_dir}/${chroot_dir}.lz" out
 }
 
 do_tar_gzip() {
@@ -257,7 +257,7 @@ do_tar_gzip() {
     do_chroot_ae \
         "$chroot_dir" \
         "/gz-packer.sh ${chroot-dir}.tar.gz"
-    cp "${chroot_dir}/${chroot_dir}.tar.gz" output
+    cp "${chroot_dir}/${chroot_dir}.tar.gz" out
 }
 
 do_tar_bzip() {
@@ -269,7 +269,7 @@ do_tar_bzip() {
     do_chroot_ae \
         "$chroot_dir" \
         "/bin/bash /j-packer.sh ${chroot-dir}.tar.xz"
-    cp "${chroot_dir}/${chroot_dir}.tar.xz" output
+    cp "${chroot_dir}/${chroot_dir}.tar.xz" out
 }
 
 run_cmd() {
