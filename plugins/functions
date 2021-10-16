@@ -218,8 +218,12 @@ do_tar()
     allowed_compression_types="bzip gzip"
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
         case $1 in
-        bzip) do_tar_bzip ;;
+        bzip2) do_tar_bzip ;;
         gzip) do_tar_gzip ;;
+        lz) do_tar_lz4 ;;
+        *) shout "Unknown compression type"
+           shout "all compression: lz,gzip,bzip2"
+           die "Giving up!!" ;;
         esac
     else
         shout "Defaulting to bzip..."
@@ -227,6 +231,18 @@ do_tar()
     fi
 
 }
+
+do_tar_lz4()
+{
+    shout "starting compression..."
+    cp "plugins/lz-packer.sh" "${chroot_dir}"
+    do_chroot_ae "$chroot_dir" "chmod +x /lz-packer.sh"
+    do_chroot_ae \
+        "$chroot_dir" \
+        "/gz-packer.sh ${chroot-dir}.lz"
+    cp "${chroot_dir}/${chroot_dir}.lz" output
+}
+
 
 do_tar_gzip()
 {
