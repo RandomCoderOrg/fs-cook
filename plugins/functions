@@ -12,7 +12,7 @@ fi
 
 die() {
     echo -e "?? Error ${*}"
-    if ! $NO_EXIT; then
+    if $ENABLE_EXIT; then
       exit 1
     fi
     :
