@@ -6,7 +6,7 @@ on:
 jobs:
   build_fs_test:
     runs-on: ubuntu
-  steps:
+    steps:
     - name: clone repos
       uses: actions/checkout@v2
     - name: create FS
