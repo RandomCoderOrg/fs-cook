@@ -29,14 +29,17 @@ shout() {
 
 do_mount() {
     local chroot_dir=$1
-    see_for_directory "$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
-    if is_mounted "$chroot_dir" >>/dev/null; then
+    points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
+    see_for_directory "$points"
+    for mount_point in $points; do
+        if is_mounted "$mount_point"  >>/dev/null; then
         (
             $SUDO mount --rbind /dev "$chroot_dir"/dev
             $SUDO mount -t sysfs /sys "$chroot_dir"/sys
             $SUDO mount -t proc /proc "$chroot_dir"/proc
         ) || die "Couldn't mount..."
     fi
+    done
 }
 
 is_mounted() {
