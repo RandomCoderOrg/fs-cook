@@ -16,7 +16,7 @@ jobs:
     - name: create FS
       run: bash -x core/default/fs.sh
     - name: pull up logs
-      run: cat /debootstrap/debootstrap.log
+      run: bash -x core/default/logs.sh
     - name: upload artifact
       uses: actions/upload-artifact@v2
       with:
