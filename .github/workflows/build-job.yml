@@ -1,0 +1,18 @@
+name: Build Tests
+
+on:
+  push:
+
+jobs:
+  build_fs_test:
+    runs-on: ubuntu
+  steps:
+  - name: clone repos
+    uses: actions/checkout@v2
+  - name: create FS
+    run: core/default/fs.sh
+  - name: upload artifact
+    uses: actions/upload-artifact@v2
+    with:
+      name: hirsute-arm64.tar.gz
+      path: out/arm64.tar.gz
