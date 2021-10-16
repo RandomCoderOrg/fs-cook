@@ -10,7 +10,7 @@ export PATH
 
 ###########################################################################
 
-if [ -d ../../core ]; then
+if [ -d core ] || [ -d ../../core ]; then
 	DEBOOTSTRAP_DIR="core/debootstrap"
 else
 	if [ -z "$DEBOOTSTRAP_DIR" ]; then
