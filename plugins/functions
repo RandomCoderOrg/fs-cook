@@ -141,7 +141,7 @@ do_debootstrap() {
     shout "debootstraping $suite to $target_dir"
 
     (
-        $SUDO ./core/debootstrap/debootstrap/debootstrap \
+        $SUDO ./core/debootstrap/debootstrap \
             $FOREIGN \
             --arch="$arch" \
             --no-check-gpg \
