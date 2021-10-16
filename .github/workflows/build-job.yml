@@ -5,12 +5,14 @@ on:
 
 jobs:
   build_fs_test:
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     steps:
     - name: clone repos
       uses: actions/checkout@v2
     - name: create FS
       run: core/default/fs.sh
+    - name: Install dependencies
+      run: sudo apt install -y binfmt-support qemu-user-static
     - name: upload artifact
       uses: actions/upload-artifact@v2
       with:
