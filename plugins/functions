@@ -145,7 +145,7 @@ do_debootstrap() {
     suite="hirsute" #* need to add more logics for more suits
     shout "debootstraping $suite to $target_dir"
 
-    if [ -n $OVERRIDER_MIRROR ]; then
+    if [[ -n $OVERRIDER_MIRROR ]]; then
       MIRROR="$OVERRIDER_MIRROR"
     else
       MIRROR="http://ports.ubuntu.com/ubuntu-ports/"
