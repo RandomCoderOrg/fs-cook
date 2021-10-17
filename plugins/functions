@@ -199,7 +199,7 @@ do_second_stage() {
     local chroot_dir=$1
     local arch=$2
     do_qemu_user_emulation
-    do_chroot_ae "$chroot_dir" /debootstrap/debootstrap --second-stage
+    do_chroot_ae "$chroot_dir" /bin/bash /debootstrap/debootstrap --second-stage
 }
 
 do_qemu_user_emulation() {
