@@ -5,7 +5,7 @@ on:
 
 jobs:
   build_fs_test:
-    runs-on: saicharankandukuri/impish-straper:latest
+    runs-on: impish-straper
     steps:
     - name: clone repos
       uses: actions/checkout@v2
