@@ -257,7 +257,7 @@ do_tar_lz4() {
     do_chroot_ae            \
         "$chroot_dir"       \
         "/gz-packer.sh ${TARGET_FILE}"
-    $SUDO cp "${chroot_dir}/${TARGET_FILE}" out
+    $SUDO cp "${chroot_dir}/${TARGET_FILE}.lz" out
 }
 
 do_tar_gzip() {
@@ -271,7 +271,7 @@ do_tar_gzip() {
     do_chroot_ae \
         "$chroot_dir" \
         "/gz-packer.sh ${TARGET_FILE}"
-    $SUDO cp "${chroot_dir}/${TARGET_FILE}" out
+    $SUDO cp "${chroot_dir}/${TARGET_FILE}.tar.gz" out
 }
 
 do_tar_bzip() {
@@ -283,7 +283,7 @@ do_tar_bzip() {
     do_chroot_ae \
         "$chroot_dir" \
         "/bin/bash /j-packer.sh ${TARGET_FILE}"
-    $SUDO cp "${chroot_dir}/${TARGET_FILE}" out
+    $SUDO cp "${chroot_dir}/${TARGET_FILE}.tar.xz" out
 }
 
 run_cmd() {
