@@ -246,7 +246,7 @@ do_compress() {
 
 do_tar_lz4() {
     shout "starting compression..."
-    cp "plugins/lz-packer.sh" "${chroot_dir}"
+    $SUDO cp "plugins/lz-packer.sh" "${chroot_dir}"
 
     do_chroot_ae            \
      "$chroot_dir"          \
@@ -255,12 +255,12 @@ do_tar_lz4() {
     do_chroot_ae            \
         "$chroot_dir"       \
         "/gz-packer.sh ${chroot-dir}.lz"
-    cp "${chroot_dir}/${chroot_dir}.lz" out
+    $SUDO cp "${chroot_dir}/${chroot_dir}.lz" out
 }
 
 do_tar_gzip() {
     shout "starting compression..."
-    cp "plugins/gz-packer.sh" "${chroot_dir}"
+    $SUDO cp "plugins/gz-packer.sh" "${chroot_dir}"
 
     do_chroot_ae \
     "$chroot_dir" \
@@ -269,19 +269,19 @@ do_tar_gzip() {
     do_chroot_ae \
         "$chroot_dir" \
         "/gz-packer.sh ${chroot-dir}.tar.gz"
-    cp "${chroot_dir}/${chroot_dir}.tar.gz" out
+    $SUDO cp "${chroot_dir}/${chroot_dir}.tar.gz" out
 }
 
 do_tar_bzip() {
     shout "starting compression..."
-    cp "plugins/j-packer.sh" "${chroot_dir}"
+    $SUDO cp "plugins/j-packer.sh" "${chroot_dir}"
     do_chroot_ae \
         "$chroot_dir" \
         "chmod +x /j-packer.sh"
     do_chroot_ae \
         "$chroot_dir" \
         "/bin/bash /j-packer.sh ${chroot-dir}.tar.xz"
-    cp "${chroot_dir}/${chroot_dir}.tar.xz" out
+    $SUDO cp "${chroot_dir}/${chroot_dir}.tar.xz" out
 }
 
 run_cmd() {
