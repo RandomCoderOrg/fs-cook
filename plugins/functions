@@ -226,6 +226,8 @@ do_chroot_ae() {
 
 do_compress() {
     #compression
+    export TARGET_FILE
+    TARGET_FILE="$(basename ${chroot_dir})"
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
         case $1 in
         bzip2) do_tar_bzip ;;
@@ -254,8 +256,8 @@ do_tar_lz4() {
 
     do_chroot_ae            \
         "$chroot_dir"       \
-        "/gz-packer.sh ${chroot-dir}.lz"
-    $SUDO cp "${chroot_dir}/${chroot_dir}.lz" out
+        "/gz-packer.sh ${TARGET_FILE}.lz"
+    $SUDO cp "${chroot_dir}/${TARGET_FILE}.lz" out
 }
 
 do_tar_gzip() {
@@ -268,8 +270,8 @@ do_tar_gzip() {
 
     do_chroot_ae \
         "$chroot_dir" \
-        "/gz-packer.sh ${chroot-dir}.tar.gz"
-    $SUDO cp "${chroot_dir}/${chroot_dir}.tar.gz" out
+        "/gz-packer.sh ${TARGET_FILE}.tar.gz"
+    $SUDO cp "${chroot_dir}/${TARGET_FILE}.tar.gz" out
 }
 
 do_tar_bzip() {
@@ -280,8 +282,8 @@ do_tar_bzip() {
         "chmod +x /j-packer.sh"
     do_chroot_ae \
         "$chroot_dir" \
-        "/bin/bash /j-packer.sh ${chroot-dir}.tar.xz"
-    $SUDO cp "${chroot_dir}/${chroot_dir}.tar.xz" out
+        "/bin/bash /j-packer.sh ${TARGET_FILE}.tar.xz"
+    $SUDO cp "${chroot_dir}/${TARGET_FILE}.tar.xz" out
 }
 
 run_cmd() {
