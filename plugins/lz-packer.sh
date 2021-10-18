@@ -11,6 +11,7 @@ tar \
     --exclude="${target_source}"/sys/* \
     --exclude="${target_source}"/tmp/* \
     --exclude="${target}" \
+    --exclude-caches \
     -cpf \
      - "${target_source}" -P \
     | pv -s $(($(du -sk "${target_source}" | awk '{print $1}') * 1024)) |\
