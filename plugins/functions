@@ -136,7 +136,7 @@ includes_packages() {
 do_debootstrap() {
     export target_dir="$1"
     export arch="$2"
-    local no_compression
+    local no_compression=false
 
     includes_packages
     foreign_arch "$arch"
@@ -167,7 +167,7 @@ do_debootstrap() {
     fi
 
     if ! $no_compression; then
-        do_tar bzip
+        do_compress bzip
     fi
 }
 
@@ -224,7 +224,7 @@ do_chroot_ae() {
     fi
 }
 
-do_tar() {
+do_compress() {
     #compression
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
         case $1 in
