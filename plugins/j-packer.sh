@@ -9,6 +9,7 @@ tar \
     --exclude="${target_source}"/proc/* \
     --exclude="${target_source}"/sys/* \
     --exclude="${target_source}"/tmp/* \
+    --exclude="${target_source}"/${0} \
     --exclude="${target}" \
     --exclude-caches-all \
     -cpf \
