@@ -16,4 +16,4 @@ tar \
     -cpf \
      - "${target_source}" -P \
     | pv -s $(($(du -sk "${target_source}" | awk '{print $1}') * 1024)) |\
-     gzip > "${target}".tar.gz
+     gzip --best > "${target}".tar.gz
