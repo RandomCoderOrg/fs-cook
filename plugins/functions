@@ -148,6 +148,9 @@ do_debootstrap() {
     foreign_arch "$arch"
     no_to_directory "$target_dir"
 
+    export chroot_dir
+    chroot_dir=$target_dir
+
     suite="hirsute" #* need to add more logics for more suits
     shout "debootstraping $suite to $target_dir"
 
