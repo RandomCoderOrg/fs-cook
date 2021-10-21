@@ -176,7 +176,7 @@ do_debootstrap() {
     fi
 
     if ! $no_compression; then
-        do_compress bzip
+        do_compress $chroot_dir
     fi
 }
 
@@ -205,7 +205,7 @@ arch_translate() {
 }
 
 do_second_stage() {
-    local chroot_dir=$1
+    chroot_dir=$1
     local arch=$2
     do_qemu_user_emulation
     do_chroot_ae "$chroot_dir" /bin/bash /debootstrap/debootstrap --second-stage
@@ -236,6 +236,7 @@ do_chroot_ae() {
 do_compress() {
     #compression
     export TARGET_FILE
+    export chroot_dir=$1
     TARGET_FILE="$(basename ${chroot_dir})"
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
         case $1 in
