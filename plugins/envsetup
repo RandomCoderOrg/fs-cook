@@ -25,6 +25,9 @@ shout() {
     echo -e "=> ${*}"
     :
 }
+msg() {
+    echo -e "${*}"
+}
 # lshout () { echo -e "${*}";:; }
 
 do_mount() {
@@ -157,7 +160,10 @@ do_debootstrap() {
     if [[ -n $OVERRIDER_MIRROR ]]; then
       MIRROR="$OVERRIDER_MIRROR"
     else
-      MIRROR="http://ports.ubuntu.com/ubuntu-ports/"
+      case $arch in
+        amd64|i386) MIRROR="http://archive.ubuntu.com/ubuntu/" ;;
+        *) MIRROR="http://ports.ubuntu.com/ubuntu-ports/" ;;
+        esac
     fi
 
     (
