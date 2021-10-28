@@ -3,12 +3,12 @@
 export INCLUDE_PACKAGES
 export NO_COMPRESSION
 
-BUILDNAME="$(basename "$(pwd)")"
+BUILDNAME="mate"
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 BUILD_CONFIG_DIR="$ROOT_DIR/core/default"
 INCLUDE_LIST="$BUILD_CONFIG_DIR/$BUILDNAME/include.list"
 EXTRA_CONFIG_SCRIPT="$BUILD_CONFIG_DIR/$BUILDNAME/extra-config.sh"
-OUT_DIR="${ROOT_DIR}/out/mate"
+OUT_DIR="${ROOT_DIR}/out/${BUILDNAME}"
 BUILD_ARCH="aarch64 armhf amd64"
 PLUGIN_DIR="${ROOT_DIR}/plugins"
 INCLUDE_PACKAGES="$(cat "$INCLUDE_LIST")"
