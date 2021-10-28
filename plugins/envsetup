@@ -142,7 +142,7 @@ includes_packages() {
 do_debootstrap() {
     export target_dir="$1"
     export arch="$2"
-    local no_compression=false
+    local NO_COMPRESSION=false
 
     includes_packages
     foreign_arch "$arch"
@@ -175,7 +175,7 @@ do_debootstrap() {
         do_second_stage "$target_dir" "$arch"
     fi
 
-    if ! $no_compression; then
+    if ! $NO_COMPRESSION; then
         do_compress $chroot_dir
     fi
 }
