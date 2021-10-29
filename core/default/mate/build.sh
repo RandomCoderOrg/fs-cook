@@ -7,11 +7,13 @@ BUILDNAME="mate"
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 BUILD_CONFIG_DIR="$ROOT_DIR/core/default"
 INCLUDE_LIST="$BUILD_CONFIG_DIR/$BUILDNAME/include.list"
+EXTRA_INCLUDE_LIST="$BUILD_CONFIG_DIR/$BUILDNAME/include-i.list"
 EXTRA_CONFIG_SCRIPT="$BUILD_CONFIG_DIR/$BUILDNAME/extra-config.sh"
 OUT_DIR="${ROOT_DIR}/out/${BUILDNAME}"
 BUILD_ARCH="aarch64 armhf amd64"
 PLUGIN_DIR="${ROOT_DIR}/plugins"
 INCLUDE_PACKAGES="$(cat "$INCLUDE_LIST")"
+ADDITIONAL_CONF=false
 #shellcheck disable=SC2034
 ENABLE_EXIT=true
 #shellcheck disable=SC2034
@@ -41,8 +43,8 @@ function second_stage()
     if [ -f "$EXTRA_CONFIG_SCRIPT" ]; then
         echo -e "${GREEN}Stage 2: Running extra config script${NC}"
         $SUDO cp "$EXTRA_CONFIG_SCRIPT" "${OUT_DIR}-${_arch}/root"
-        $SUDO chmod +x "${OUT_DIR}-${_arch}/root/$EXTRA_CONFIG_SCRIPT"
-        do_chroot_ae "${OUT_DIR}-${_arch}" /bin/bash -c "cd /root && /bin/bash ./extra-config.sh"
+        $SUDO cp "$EXTRA_INCLUDE_LIST" "${OUT_DIR}-${_arch}/root"
+        do_chroot_ae "${OUT_DIR}-${_arch}" /bin/bash -c "/root/extra-config.sh"
     else
         lwarn "No extra config script found"
     fi
