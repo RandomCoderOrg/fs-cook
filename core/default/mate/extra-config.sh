@@ -3,6 +3,40 @@
 sudo -n true
 echo "==[START]=="
 
+function list_parser() {
+    export count
+    export include_list
+    
+    count=0
+    include_list=""
+
+    list_file=$1
+
+    if [ -f "$list_file" ]; then
+        buffer=$(cat "$list_file")
+        for line in $buffer; do
+            ((count++))
+            include_list+=" $line"
+        done
+    else
+        echo "File $list_file not found.."
+    fi
+}
+
+function if_found_install_extras() {
+    include_file="/root/include-i.list"
+    if [ -f $include_file ]; then
+        list_parser "$include_file"
+        if [ -n "$include_list" ]; then
+            apt install -y --force-yes "$include_list"
+        else
+            echo "No extra packages to install. FileEmpty.."
+        fi
+    fi
+}
+#######################################
+
+if_found_install_extras
 echo "setting up udroid user..."
 useradd -m \
     -p "$(openssl passwd -1 secret)" \
