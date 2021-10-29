@@ -64,6 +64,26 @@ is_mounted() {
     fi
 }
 
+list_parser() {
+    export count
+    export include_list
+    
+    count=0
+    include_list=""
+
+    list_file=$1
+
+    if [ -f "$list_file" ]; then
+        buffer=$(cat "$list_file")
+        for line in $buffer; do
+            ((count++))
+            include_list+=" $line"
+        done
+    else
+        echo "File $list_file not found.."
+    fi
+}
+
 depends_on() {
     local packages="$1"
     export x
