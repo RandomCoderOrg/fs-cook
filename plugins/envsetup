@@ -165,7 +165,7 @@ includes_packages() {
 do_debootstrap() {
     export target_dir="$1"
     export arch="$2"
-    local NO_COMPRESSION=false
+    local NO_COMPRESSION
 
     includes_packages
     foreign_arch "$arch"
