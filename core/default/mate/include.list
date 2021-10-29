@@ -1,7 +1,4 @@
-bzip2
-lz4
 gzip
 sudo
 apt-utils
 perl
-dialog-common
