@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+export ROOT_DIR
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+
 # sudo check
 if [ "$(id -u)" != "0" ]; then
     if ! command -v sudo >/dev/null 2>&1; then
@@ -174,7 +178,24 @@ do_debootstrap() {
     export chroot_dir
     chroot_dir=$target_dir
 
-    suite="hirsute" #* need to add more logics for more suits
+    if [ -n "$SUITE" ]; then
+            supported_suites="$(ls "${ROOT_DIR}"/core/debootstrap/scripts)"
+            suite_found=false
+            for sts in $supported_suites; do
+                if [ "$sts" == "$SUITE" ]; then
+                    suite="$SUITE"
+                    suite_found=true
+                    break
+                fi
+            done
+
+            if [ "$suite_found" == "false" ]; then
+                die "Unsupported suite: $SUITE"
+            fi
+    else
+        suite="hirsute"
+    fi
+
     shout "debootstraping $suite to $target_dir"
 
     if [[ -n $OVERRIDER_MIRROR ]]; then
@@ -192,7 +213,7 @@ do_debootstrap() {
             --arch="$arch" \
             --no-check-gpg \
             --include="${include_final}" \
-            $suite \
+            "$suite" \
             "$target_dir" \
             $MIRROR
     ) || die "Couldn't debootstrap..."
