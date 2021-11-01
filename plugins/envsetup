@@ -155,12 +155,12 @@ foreign_arch() {
 
 includes_packages() {
     # comma sperated values
-    includes="bzip2 pv lz4 ${INCLUDE_PACKAGES}"
+    includes="bzip2 pv ${INCLUDE_PACKAGES}"
     # environment variable INCLUDE_PACKAGES
     export includes
     x=0
     for item in $includes; do
-        include_final="$include_final,$item"
+        include_final="$item"
         ((x = x + 1))
     done
     shout "$x includes processed "
@@ -218,9 +218,7 @@ do_debootstrap() {
             $MIRROR
     ) || die "Couldn't debootstrap..."
 
-    if $foreign_worker; then
-        do_second_stage "$target_dir" "$arch"
-    fi
+    do_second_stage "$target_dir" "$arch"
 
     if ! $NO_COMPRESSION; then
         do_compress $chroot_dir
@@ -242,7 +240,7 @@ arch_translate() {
         t_arch="armel"
         ;;
     amd64 | x86_64)
-        t_arch="amd64"
+        t_arch="x86_64"
         ;;
     i686 | i386)
         t_arch="i386"
