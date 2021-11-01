@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# => thanks to @GxmerSam for script
+
 sudo -n true
 echo "==[START]=="
 
@@ -60,7 +62,7 @@ sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/p
 
 rm -f packages.microsoft.gpg
 sudo apt update -y
-sudo apt install code -y
+sudo apt install code sublime-text -y
 sudo apt clean
 
 echo "==[END]=="
