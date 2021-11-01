@@ -2,3 +2,5 @@ gzip
 sudo
 apt-utils
 perl
+nano
+vim
