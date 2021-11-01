@@ -6,6 +6,8 @@ export INCLUDE_PACKAGES
 export NO_COMPRESSION
 export SUITE
 
+export packages_buffer
+
 BUILDNAME="mate"
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 BUILD_CONFIG_DIR="$ROOT_DIR/core/default"
@@ -16,7 +18,7 @@ OUT_DIR="${ROOT_DIR}/out/${BUILDNAME}"
 BUILD_ARCH="aarch64 armhf amd64"
 PLUGIN_DIR="${ROOT_DIR}/plugins"
 INCLUDE_PACKAGES="$(cat "$INCLUDE_LIST")"
-SUITE="hirsute"
+SUITE="hirsute" # (recomended: hirsute)
 ADDITIONAL_CONF=false
 #shellcheck disable=SC2034
 ENABLE_EXIT=true
@@ -27,6 +29,20 @@ NO_COMPRESSION=true
 source "$PLUGIN_DIR/envsetup"
 #shellcheck disable=SC1091
 source "$PLUGIN_DIR/colors"
+
+function run_cmd() {
+    local cmd="$*"
+    do_chroot_ae "${OUT_DIR}-${_arch}" /bin/bash -c "$cmd"
+}
+
+function itterate_var() {
+    local var="$1"
+    export count="0"
+
+    for element in $var; do
+        ((count++))
+    done
+}
 
 function stage_one() {
     export BUILD_DIR
@@ -54,18 +70,32 @@ deb http://ports.ubuntu.com/ubuntu-ports ${SUITE} universe\n" >> "${OUT_DIR}-${_
         echo -e "${GREEN}Stage 2: Running extra config script${NC}"
         $SUDO cp "$EXTRA_CONFIG_SCRIPT" "${OUT_DIR}-${_arch}/root"
         $SUDO cp "$EXTRA_INCLUDE_LIST" "${OUT_DIR}-${_arch}/root"
-        do_chroot_ae "${OUT_DIR}-${_arch}" /bin/bash -c "/root/extra-config.sh"
+        run_cmd "/root/extra-config.sh"
+        run_cmd "rm -rf /root/extra-config.sh"
+        run_cmd "rm -rf /root/include-i.list"
     else
         lwarn "No extra config script found"
     fi
 
     if $ADDITIONAL_CONF; then
         $SUDO cp "${ROOT_DIR}/core/default/mate/layout.tar.xz" "${OUT_DIR}-${_arch}/root"
-        do_chroot_ae "${OUT_DIR}-${_arch}" /bin/bash -c "cd /root && tar xf layout.tar.xz"
+        run_cmd "cd /root && tar xf layout.tar.xz"
+        run_cmd "rm -rf /root/layout.tar.xz"
     fi
+
+    # * some more cleanup
+    run_cmd "apt clean"
 
     echo -e "${GREEN}Stage 3: Building packages${NC}"
     do_compress "${OUT_DIR}-${_arch}"
+    packages_buffer+="\n${OUT_DIR}-${_arch}"
 }
 
 stage_one
+
+# Final Echo
+itterate_var "$packages_buffer"
+echo -e "${GREEN}Packages built: ${count}${NC}"
+echo -e "${packages_buffer}"
+
+exit 0
