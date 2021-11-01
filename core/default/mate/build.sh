@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+# Recomended only with ubuntu distros ( best: hirsute )
+
 export INCLUDE_PACKAGES
 export NO_COMPRESSION
+export SUITE
 
 BUILDNAME="mate"
 ROOT_DIR="$(git rev-parse --show-toplevel)"
@@ -13,6 +16,7 @@ OUT_DIR="${ROOT_DIR}/out/${BUILDNAME}"
 BUILD_ARCH="aarch64 armhf amd64"
 PLUGIN_DIR="${ROOT_DIR}/plugins"
 INCLUDE_PACKAGES="$(cat "$INCLUDE_LIST")"
+SUITE="hirsute"
 ADDITIONAL_CONF=false
 #shellcheck disable=SC2034
 ENABLE_EXIT=true
@@ -40,6 +44,12 @@ function stage_one() {
 
 function second_stage()
 {
+    # => resolv sources.list
+    echo -e "deb http://ports.ubuntu.com/ubuntu-ports ${SUITE} main restricted\n\
+deb-src http://archive.ubuntu.com/ubuntu/ ${SUITE} universe\n\
+deb http://ports.ubuntu.com/ubuntu-ports ${SUITE} universe\n" >> "${OUT_DIR}-${_arch}"/etc/apt/sources.list
+
+
     if [ -f "$EXTRA_CONFIG_SCRIPT" ]; then
         echo -e "${GREEN}Stage 2: Running extra config script${NC}"
         $SUDO cp "$EXTRA_CONFIG_SCRIPT" "${OUT_DIR}-${_arch}/root"
