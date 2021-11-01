@@ -180,7 +180,6 @@ simple-scan
 smbclient
 speech-dispatcher
 sssd
-thermald
 tilda
 tlp
 transmission-gtk
