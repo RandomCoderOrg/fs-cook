@@ -30,7 +30,7 @@ function if_found_install_extras() {
     if [ -f $include_file ]; then
         list_parser "$include_file"
         if [ -n "$include_list" ]; then
-            apt install -y --force-yes "$include_list"
+            apt install -y --force-yes --no-install-recommends "$include_list"
         else
             echo "No extra packages to install. FileEmpty.."
         fi
