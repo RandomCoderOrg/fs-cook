@@ -8,9 +8,11 @@ source plugins/envsetup
 source plugins/colors
 
 export OVERRIDER_COMPRESSION_TYPE
+export SUITE
 
-frn="out/hirsute-raw"
+frn="out/impish-raw"
 OVERRIDER_COMPRESSION_TYPE="gzip"
+SUITE="impish"
 
 do_debootstrap "${frn}-arm64" arm64
 do_compress    "${frn}-arm64"
