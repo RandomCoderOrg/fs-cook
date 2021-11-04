@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #shellcheck disable=SC1091
 
+export ENABLE_EXIT=true
+
 # this is an example file to BUILD raw file system
 # export variable SUITE to set debootstrap suite name (default: hirsute)
 
