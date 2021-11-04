@@ -8,9 +8,11 @@ source plugins/envsetup
 source plugins/colors
 
 export OVERRIDER_COMPRESSION_TYPE
+export ENABLE_EXIT
 
 frn="out/hirsute-raw"
 OVERRIDER_COMPRESSION_TYPE="gzip"
+ENABLE_EXIT=true
 
 do_debootstrap "${frn}-arm64" arm64
 do_compress    "${frn}-arm64"

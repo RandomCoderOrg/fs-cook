@@ -9,10 +9,12 @@ source plugins/colors
 
 export OVERRIDER_COMPRESSION_TYPE
 export SUITE
+export ENABLE_EXIT
 
 frn="out/impish-raw"
 OVERRIDER_COMPRESSION_TYPE="gzip"
 SUITE="impish"
+ENABLE_EXIT=true
 
 do_debootstrap "${frn}-arm64" arm64
 do_compress    "${frn}-arm64"
