@@ -15,5 +15,5 @@ tar \
     --exclude-caches-all \
     -cpf \
      - "${target_source}" -P \
-    | pv -s $(($(du -sk "${target_source}" | awk '{print $1}') * 1024)) |\
+    | pv -s $(($(du -skx "${target_source}" | awk '{print $1}') * 1024)) |\
      lz4 -9 > "${target}".tar.gz # use high compression
