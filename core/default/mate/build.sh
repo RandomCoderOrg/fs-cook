@@ -65,11 +65,16 @@ function second_stage()
 deb-src http://archive.ubuntu.com/ubuntu/ ${SUITE} universe\n\
 deb http://ports.ubuntu.com/ubuntu-ports ${SUITE} universe\n" >> "${OUT_DIR}-${_arch}"/etc/apt/sources.list
 
+    # => update pacakges
+    run_cmd "apt-get update"
+    run_cmd "apt-get install bzip2 -y"
+
 
     if [ -f "$EXTRA_CONFIG_SCRIPT" ]; then
         echo -e "${GREEN}Stage 2: Running extra config script${NC}"
         $SUDO cp "$EXTRA_CONFIG_SCRIPT" "${OUT_DIR}-${_arch}/root"
         $SUDO cp "$EXTRA_INCLUDE_LIST" "${OUT_DIR}-${_arch}/root"
+        run_cmd "chmod +x /root/extra-config.sh"
         run_cmd "/root/extra-config.sh"
         run_cmd "rm -rf /root/extra-config.sh"
         run_cmd "rm -rf /root/include-i.list"
@@ -78,8 +83,9 @@ deb http://ports.ubuntu.com/ubuntu-ports ${SUITE} universe\n" >> "${OUT_DIR}-${_
     fi
 
     if $ADDITIONAL_CONF; then
-        $SUDO cp "${ROOT_DIR}/core/default/mate/layout.tar.xz" "${OUT_DIR}-${_arch}/root"
-        run_cmd "cd /root && tar xf layout.tar.xz"
+        cat "${ROOT_DIR}/core/default/mate/layout.tar.gz"* > "${ROOT_DIR}/core/default/mate/layout.tar.gz"
+        $SUDO cp "${ROOT_DIR}/core/default/mate/layout.tar.gz" "${OUT_DIR}-${_arch}/root"
+        run_cmd "tar -x --strip-components=1 -f layout.tar.xz /root"
         run_cmd "rm -rf /root/layout.tar.xz"
     fi
 
