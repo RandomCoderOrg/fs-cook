@@ -284,7 +284,7 @@ do_compress() {
     export chroot_dir=$1
     TARGET_FILE="$(basename ${chroot_dir})"
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
-        case $1 in
+        case $OVERRIDER_COMPRESSION_TYPE in
         bzip2) do_tar_bzip ;;
         gzip) do_tar_gzip ;;
         lz) do_tar_lz4 ;;
