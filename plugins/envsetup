@@ -252,7 +252,11 @@ arch_translate() {
 do_second_stage() {
     chroot_dir=$1
     local arch=$2
+    
+    dpkg_depends_on "binfmt-support"
+
     do_qemu_user_emulation
+    $SUDO service binfmt-support start
     do_chroot_ae "$chroot_dir" /bin/bash /debootstrap/debootstrap --second-stage
 }
 
