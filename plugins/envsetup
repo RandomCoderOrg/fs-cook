@@ -91,6 +91,8 @@ list_parser() {
 depends_on() {
     local packages="$1"
     export x
+
+    x=0
     for package in ${packages}; do
         if ! command -v "${package}" &>/dev/null; then
             warn "Missing package: ${package}"
@@ -106,6 +108,8 @@ depends_on() {
 dpkg_depends_on() {
     local packages="$1"
     export x
+
+    x=0
     for package in ${packages}; do
         if ! dpkg -s "${package}" &>/dev/null; then
             warn "Missing package: ${package}"
