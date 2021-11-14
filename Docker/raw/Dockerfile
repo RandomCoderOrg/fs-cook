@@ -7,13 +7,14 @@ RUN apt-get update \
     && apt-get clean
 
 RUN apt-get install -y apt-utils \
-    && apt-get install build-essentials \
+    && apt-get install -y build-essential \
         qemu-user-static \
         wget \
         curl \
         git \
         ubuntu-keyring \
-        gnupg
+        gnupg \
+        binfmt-support
 
 ENV HOME /root
 WORKDIR ${HOME}
