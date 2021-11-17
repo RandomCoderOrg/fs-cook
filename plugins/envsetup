@@ -393,3 +393,11 @@ run_cmd() {
     local command="$2"
     do_chroot_ae "$chroot_dir" "$command"
 }
+
+install_pkg()
+{
+    pkg_name="$*"
+
+    run_cmd "apt install -y $pkg_name" || warn "Couldn't install $pkg_name"
+    run_cmd "apt clean"
+}
