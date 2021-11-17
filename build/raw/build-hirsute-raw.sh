@@ -9,6 +9,8 @@ source plugins/colors
 
 export OVERRIDER_COMPRESSION_TYPE
 export ENABLE_EXIT
+export FS_USER
+export FS_PASS
 
 frn="out/hirsute-raw"
 OVERRIDER_COMPRESSION_TYPE="gzip"

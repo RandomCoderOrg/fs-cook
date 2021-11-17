@@ -159,7 +159,7 @@ foreign_arch() {
 
 includes_packages() {
     # comma sperated values
-    includes="bzip2 pv awk ${INCLUDE_PACKAGES}"
+    includes="bzip2 pv ${INCLUDE_PACKAGES}"
     # environment variable INCLUDE_PACKAGES
     export includes
     x=0
@@ -216,8 +216,14 @@ do_debootstrap() {
         esac
     fi
 
+    if ! $DEVCONTAINER; then
+        _debootstrap="$ROOT_DIR/core/debootstrap/debootstrap"
+    else
+        _debootstrap=$(which debootstrap)
+    fi
+
     (
-        $SUDO ./core/debootstrap/debootstrap \
+        $SUDO $_debootstrap \
             $FOREIGN \
             --arch="$arch" \
             --no-check-gpg \
@@ -239,8 +245,9 @@ do_debootstrap() {
 }
 
 setup_user_env() {
-    export _user
-    export _passwd
+    local _user
+    local _passwd
+    local _pass_cmd
 
     if [ -n "$FS_USER" ]; then
         _user=$FS_USER
@@ -252,24 +259,55 @@ setup_user_env() {
 
     if [ -n "$FS_PASSWD" ]; then
         _passwd=$FS_PASSWD
-    else
+        _pass_cmd="-p $(openssl passwd -1 $_passwd)"
+    elif [ -z "$FS_USER" ]; then
         _passwd="fs-cook-${RANDOM}"
         warn "password not set in \$\"FS_PASSWD\""
         msg "defaulting to $_passwd"
+        _pass_cmd="-p $(openssl passwd -1 $_passwd)"
     fi
+    
 }
 
 setup_user()
 {
     setup_user_env
+     
+    default_uid=1001
+    default_gid=1001
 
-    export CMD
+    # SUDO setup
+    if ! $ENABLE_PASSWD; then
+        pass_set_cmd="echo $_user ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$_user;chmod 0440 /etc/sudoers.d/$_user"
+    else
+        pass_set_cmd="echo $_user ALL=\(root\) ALL > /etc/sudoers.d/$_user;chmod 0440 /etc/sudoers.d/$_user"
+    fi
 
-    shout "setting $_user with password $_passwd ..."
+    # UID setup
+    if [ -n "$FS_UID" ]; then
+        uid_val="$FS_UID"
+    else
+        uid_val="$default_uid"
+    fi
+
+    # GID setup
+    if [ -n "$FS_GID" ]; then
+        gid_val="$FS_GID"
+    else
+        gid_val="$default_gid"
+    fi
+
+    shout "setting up $_user..."
+    
+    # create user group
+    run_cmd "groupadd --gid 1001 $_user"
+
+    # create user
     CMD="useradd -m \
-    -p $(openssl passwd -1 $_passwd) \
-    -G sudo \
+    $_pass_cmd -G sudo \
     -d /home/$_user \
+    -g $gid_val \
+    -u $uid_val \
     -k /etc/skel \
     -s /bin/bash \
     $_user"
@@ -277,6 +315,7 @@ setup_user()
     run_cmd "apt update"
     install_pkg "openssl"   
     run_cmd "$CMD"
+    run_cmd "$pass_set_cmd"
 
 }
 arch_translate() {
@@ -409,6 +448,6 @@ install_pkg()
 {
     pkg_name="$*"
 
-    run_cmd "apt install -y $pkg_name" || warn "Couldn't install $pkg_name"
+    run_cmd "export DEBIAN_FRONTEND=noninteractive && apt install -y $pkg_name" || warn "Couldn't install $pkg_name"
     run_cmd "apt clean"
 }

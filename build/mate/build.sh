@@ -30,11 +30,6 @@ source "$PLUGIN_DIR/envsetup"
 #shellcheck disable=SC1091
 source "$PLUGIN_DIR/colors"
 
-function run_cmd() {
-    local cmd="$*"
-    do_chroot_ae "${OUT_DIR}-${_arch}" /bin/bash -c "$cmd"
-}
-
 function itterate_var() {
     local var="$1"
     export count="0"
