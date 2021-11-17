@@ -265,6 +265,8 @@ setup_user()
     -s /bin/bash \
     $_user"
 
+    run_cmd "apt update"
+    install_pkg "openssl"   
     run_cmd "$CMD"
 
 }
