@@ -173,7 +173,12 @@ includes_packages() {
 do_debootstrap() {
     export target_dir="$1"
     export arch="$2"
+
     local NO_COMPRESSION
+
+    if [ -z "$DISABLE_USER_SETUP" ]; then
+        export DISABLE_USER_SETUP=false
+    fi
 
     includes_packages
     foreign_arch "$arch"
@@ -224,11 +229,56 @@ do_debootstrap() {
 
     do_second_stage "$target_dir" "$arch"
 
+    if ! DISABLE_USER_SETUP; then
+        setup_user
+    fi
+
     if ! $NO_COMPRESSION; then
-        do_compress $chroot_dir
+        do_compress "$chroot_dir"
     fi
 }
 
+setup_user_env() {
+    export _user
+    export _passwd
+
+    if [ -n "$FS_USER" ]; then
+        _user=$FS_USER
+    else
+        warn "username not set in \$\"FS_USER\""
+        msg "defaulting to ${USER}01"
+        _user="${USER}01"
+    fi
+
+    if [ -n "$FS_PASSWD" ]; then
+        _passwd=$FS_PASSWD
+    else
+        _passwd="fs-cook-${RANDOM}"
+        warn "password not set in \$\"FS_PASSWD\""
+        msg "defaulting to $_passwd"
+    fi
+}
+
+setup_user()
+{
+    setup_user_env
+
+    export CMD
+
+    shout "setting $_user with password $_passwd ..."
+    CMD="useradd -m \
+    -p $(openssl passwd -1 $_passwd) \
+    -G sudo \
+    -d /home/$_user \
+    -k /etc/skel \
+    -s /bin/bash \
+    $_user"
+
+    run_cmd "apt update"
+    install_pkg "openssl"   
+    run_cmd "$CMD"
+
+}
 arch_translate() {
     arch=$1
     export t_arch
@@ -353,4 +403,12 @@ run_cmd() {
     local chroot_dir="$1"
     local command="$2"
     do_chroot_ae "$chroot_dir" "$command"
+}
+
+install_pkg()
+{
+    pkg_name="$*"
+
+    run_cmd "apt install -y $pkg_name" || warn "Couldn't install $pkg_name"
+    run_cmd "apt clean"
 }

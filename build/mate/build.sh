@@ -10,7 +10,7 @@ export packages_buffer
 
 BUILDNAME="mate"
 ROOT_DIR="$(git rev-parse --show-toplevel)"
-BUILD_CONFIG_DIR="$ROOT_DIR/core/default"
+BUILD_CONFIG_DIR="$ROOT_DIR/build"
 INCLUDE_LIST="$BUILD_CONFIG_DIR/$BUILDNAME/include.list"
 EXTRA_INCLUDE_LIST="$BUILD_CONFIG_DIR/$BUILDNAME/include-i.list"
 EXTRA_CONFIG_SCRIPT="$BUILD_CONFIG_DIR/$BUILDNAME/extra-config.sh"

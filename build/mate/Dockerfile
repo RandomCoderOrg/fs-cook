@@ -21,4 +21,4 @@ WORKDIR ${HOME}
 RUN git clone https://github.com/RandomCoderOrg/fs-cook
 WORKDIR ${HOME}/fs-cook
 
-CMD ["/root/fs-cook/core/default/mate/build.sh"]
+CMD ["/root/fs-cook/build/mate/build.sh"]
