@@ -8,11 +8,17 @@
 	},
 
 	// Set *default* container specific settings.json values on container create.
-	"settings": {},
+	"settings": {
+		"files.eol": "\n"
+	},
 
 
 	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [],
+	"extensions": [
+		"tabnine.tabnine-vscode",
+		"lizebang.bash-extension-pack",
+		"shakram02.bash-beautify"
+	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
