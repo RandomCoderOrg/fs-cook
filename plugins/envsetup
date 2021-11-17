@@ -173,7 +173,12 @@ includes_packages() {
 do_debootstrap() {
     export target_dir="$1"
     export arch="$2"
+
     local NO_COMPRESSION
+
+    if [ -z "$DISABLE_USER_SETUP" ]; then
+        export DISABLE_USER_SETUP=false
+    fi
 
     includes_packages
     foreign_arch "$arch"
@@ -223,6 +228,10 @@ do_debootstrap() {
     ) || die "Couldn't debootstrap..."
 
     do_second_stage "$target_dir" "$arch"
+
+    if ! DISABLE_USER_SETUP; then
+        setup_user
+    fi
 
     if ! $NO_COMPRESSION; then
         do_compress "$chroot_dir"
