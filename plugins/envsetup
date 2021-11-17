@@ -225,10 +225,49 @@ do_debootstrap() {
     do_second_stage "$target_dir" "$arch"
 
     if ! $NO_COMPRESSION; then
-        do_compress $chroot_dir
+        do_compress "$chroot_dir"
     fi
 }
 
+setup_user_env() {
+    export _user
+    export _passwd
+
+    if [ -n "$FS_USER" ]; then
+        _user=$FS_USER
+    else
+        warn "username not set in \$\"FS_USER\""
+        msg "defaulting to ${USER}01"
+        _user="${USER}01"
+    fi
+
+    if [ -n "$FS_PASSWD" ]; then
+        _passwd=$FS_PASSWD
+    else
+        _passwd="fs-cook-${RANDOM}"
+        warn "password not set in \$\"FS_PASSWD\""
+        msg "defaulting to $_passwd"
+    fi
+}
+
+setup_user()
+{
+    setup_user_env
+
+    export CMD
+
+    shout "setting $_user with password $_passwd ..."
+    CMD="useradd -m \
+    -p $(openssl passwd -1 $_passwd) \
+    -G sudo \
+    -d /home/$_user \
+    -k /etc/skel \
+    -s /bin/bash \
+    $_user"
+
+    run_cmd "$CMD"
+
+}
 arch_translate() {
     arch=$1
     export t_arch
