@@ -324,7 +324,7 @@ do_debootstrap() {
         manpages-dev \
         init-system-helpers"
 
-    if ! $DISABLE_USER_SETUP; then
+    if $ENABLE_USER_SETUP; then
         setup_user
     fi
 

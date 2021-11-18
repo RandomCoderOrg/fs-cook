@@ -18,18 +18,20 @@ export SUITE
 export OVERRIDER_MIRROR
 export INCLUDE_PACKAGES
 export DISABLE_LOCAL_DEBOOTSTRAP
-export FS_USER
-export FS_PASS
+export ENABLE_USER_SETUP
+# export FS_USER
+# export FS_PASS
 
 SUITE="kali-rolling"
-FS_USER="kali"
-FS_PASS="kali" # no need to sepecify FS_UID & FS_GID cause default is 1001
+# FS_USER="kali"
+# FS_PASS="kali" # no need to sepecify FS_UID & FS_GID cause default is 1001
 OVERRIDER_MIRROR="http://http.kali.org/kali"
 frn="out/${SUITE}-raw"
 INCLUDE_PACKAGES="sudo apt-utils"
 OVERRIDER_COMPRESSION_TYPE="gzip"
 ENABLE_EXIT=true
 DISABLE_LOCAL_DEBOOTSTRAP=true
+ENABLE_USER_SETUP=false
 
 warn "for best results use kali-linux host for building"
 

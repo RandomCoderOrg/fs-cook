@@ -9,12 +9,14 @@ source plugins/colors
 
 export OVERRIDER_COMPRESSION_TYPE
 export ENABLE_EXIT
-export FS_USER
-export FS_PASS
+export ENABLE_USER_SETUP
+# export FS_USER
+# export FS_PASS
 
 frn="out/hirsute-raw"
 OVERRIDER_COMPRESSION_TYPE="gzip"
 ENABLE_EXIT=true
+ENABLE_USER_SETUP=false
 
 do_debootstrap "${frn}-arm64" arm64
 do_compress    "${frn}-arm64"
