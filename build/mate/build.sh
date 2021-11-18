@@ -10,7 +10,7 @@ export packages_buffer
 
 BUILDNAME="mate"
 ROOT_DIR="$(git rev-parse --show-toplevel)"
-BUILD_CONFIG_DIR="$ROOT_DIR/core/default"
+BUILD_CONFIG_DIR="$ROOT_DIR/build"
 INCLUDE_LIST="$BUILD_CONFIG_DIR/$BUILDNAME/include.list"
 EXTRA_INCLUDE_LIST="$BUILD_CONFIG_DIR/$BUILDNAME/include-i.list"
 EXTRA_CONFIG_SCRIPT="$BUILD_CONFIG_DIR/$BUILDNAME/extra-config.sh"
@@ -29,11 +29,6 @@ NO_COMPRESSION=true
 source "$PLUGIN_DIR/envsetup"
 #shellcheck disable=SC1091
 source "$PLUGIN_DIR/colors"
-
-function run_cmd() {
-    local cmd="$*"
-    do_chroot_ae "${OUT_DIR}-${_arch}" /bin/bash -c "$cmd"
-}
 
 function itterate_var() {
     local var="$1"

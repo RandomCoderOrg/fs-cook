@@ -9,10 +9,13 @@ source plugins/colors
 
 export OVERRIDER_COMPRESSION_TYPE
 export ENABLE_EXIT
-export FS_USER
-export FS_PASS
+export SUITE
+export OVERRIDER_MIRROR
+export INCLUDE_PACKAGES
 
-frn="out/hirsute-raw"
+SUITE="kali-rolling"
+OVERRIDER_MIRROR="http://kali.download/kali"
+frn="out/${SUITE}-raw"
 OVERRIDER_COMPRESSION_TYPE="gzip"
 ENABLE_EXIT=true
 

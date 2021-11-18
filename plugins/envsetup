@@ -173,7 +173,12 @@ includes_packages() {
 do_debootstrap() {
     export target_dir="$1"
     export arch="$2"
+
     local NO_COMPRESSION
+
+    if [ -z "$DISABLE_USER_SETUP" ]; then
+        export DISABLE_USER_SETUP=false
+    fi
 
     includes_packages
     foreign_arch "$arch"
@@ -211,8 +216,14 @@ do_debootstrap() {
         esac
     fi
 
+    if ! $DEVCONTAINER; then
+        _debootstrap="$ROOT_DIR/core/debootstrap/debootstrap"
+    else
+        _debootstrap=$(which debootstrap)
+    fi
+
     (
-        $SUDO ./core/debootstrap/debootstrap \
+        $SUDO $_debootstrap \
             $FOREIGN \
             --arch="$arch" \
             --no-check-gpg \
@@ -224,11 +235,89 @@ do_debootstrap() {
 
     do_second_stage "$target_dir" "$arch"
 
+    if ! $DISABLE_USER_SETUP; then
+        setup_user
+    fi
+
     if ! $NO_COMPRESSION; then
-        do_compress $chroot_dir
+        do_compress "$chroot_dir"
     fi
 }
 
+setup_user_env() {
+    export _user
+    export _passwd
+    export _pass_cmd
+
+    if [ -n "$FS_USER" ]; then
+        _user=$FS_USER
+    else
+        warn "username not set in \$\"FS_USER\""
+        msg "defaulting to ${USER}01"
+        _user="${USER}01"
+    fi
+
+    if [ -n "$FS_PASSWD" ]; then
+        _passwd=$FS_PASSWD
+        _pass_cmd="-p $(openssl passwd -1 $_passwd)"
+    elif [ -z "$FS_USER" ]; then
+        _passwd="fs-cook-${RANDOM}"
+        warn "password not set in \$\"FS_PASSWD\""
+        msg "defaulting to $_passwd"
+        _pass_cmd="-p $(openssl passwd -1 $_passwd)"
+    fi
+    
+}
+
+setup_user()
+{
+    setup_user_env
+     
+    default_uid=1001
+    default_gid=1001
+
+    # SUDO setup
+    if ! $ENABLE_PASSWD; then
+        pass_set_cmd="echo $_user ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$_user;chmod 0440 /etc/sudoers.d/$_user"
+    else
+        pass_set_cmd="echo $_user ALL=\(root\) ALL > /etc/sudoers.d/$_user;chmod 0440 /etc/sudoers.d/$_user"
+    fi
+
+    # UID setup
+    if [ -n "$FS_UID" ]; then
+        uid_val="$FS_UID"
+    else
+        uid_val="$default_uid"
+    fi
+
+    # GID setup
+    if [ -n "$FS_GID" ]; then
+        gid_val="$FS_GID"
+    else
+        gid_val="$default_gid"
+    fi
+
+    shout "setting up $_user..."
+    
+    # create user group
+    run_cmd "groupadd --gid 1001 $_user"
+
+    # create user
+    CMD="useradd -m \
+    $_pass_cmd -G sudo \
+    -d /home/$_user \
+    -g $gid_val \
+    -u $uid_val \
+    -k /etc/skel \
+    -s /bin/bash \
+    $_user"
+
+    run_cmd "apt update"
+    install_pkg "openssl"   
+    run_cmd "$CMD"
+    run_cmd "$pass_set_cmd"
+    echo -e "$_user\n$_passwd" > "$ROOT_DIR/out/${chroot_dir}_user_details.txt"
+}
 arch_translate() {
     arch=$1
     export t_arch
@@ -350,7 +439,14 @@ do_tar_bzip() {
 }
 
 run_cmd() {
-    local chroot_dir="$1"
-    local command="$2"
+    local command="$1"
     do_chroot_ae "$chroot_dir" "$command"
+}
+
+install_pkg()
+{
+    pkg_name="$*"
+
+    run_cmd "export DEBIAN_FRONTEND=noninteractive && apt install -y $pkg_name" || warn "Couldn't install $pkg_name"
+    run_cmd "apt clean"
 }
