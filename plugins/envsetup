@@ -405,6 +405,7 @@ do_compress() {
     export chroot_dir=$1
     TARGET_FILE="$(basename ${chroot_dir})"
 
+    run_cmd "apt update"
     install_pkg "pv awk du bzip2 lz4 gzip"
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
         case $OVERRIDER_COMPRESSION_TYPE in
