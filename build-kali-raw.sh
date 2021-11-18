@@ -4,6 +4,11 @@
 # this is an example file to BUILD raw file system
 # export variable SUITE to set debootstrap suite name (default: hirsute)
 
+################
+# kali build notice
+# for best results use kali-linux host for building
+# or try running with docker file in build/kali/raw
+
 source plugins/envsetup
 source plugins/colors
 
@@ -25,6 +30,8 @@ INCLUDE_PACKAGES="sudo apt-utils"
 OVERRIDER_COMPRESSION_TYPE="gzip"
 ENABLE_EXIT=true
 DISABLE_LOCAL_DEBOOTSTRAP=true
+
+lwarn "for best results use kali-linux host for building"
 
 do_debootstrap "${frn}-arm64" arm64
 do_compress    "${frn}-arm64"
