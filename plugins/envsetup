@@ -259,6 +259,51 @@ do_debootstrap() {
 
     do_second_stage "$target_dir" "$arch"
 
+        install_pkg "pv \
+        awk \
+        du bzip2 \
+        lz4 \
+        gzip \
+        apt-utils \
+        openssh-client \
+        gnupg2 \
+        dirmngr \
+        iproute2 \
+        procps \
+        lsof \
+        htop \
+        net-tools \
+        psmisc \
+        curl \
+        wget \
+        rsync \
+        ca-certificates \
+        unzip \
+        zip \
+        nano \
+        vim-tiny \
+        less \
+        jq \
+        lsb-release \
+        apt-transport-https \
+        dialog \
+        libc6 \
+        libgcc1 \
+        libkrb5-3 \
+        libgssapi-krb5-2 \
+        libicu[0-9][0-9] \
+        liblttng-ust0 \
+        libstdc++6 \
+        zlib1g \
+        locales \
+        sudo \
+        ncdu \
+        man-db \
+        strace \
+        manpages \
+        manpages-dev \
+        init-system-helpers"
+
     if ! $DISABLE_USER_SETUP; then
         setup_user
     fi
@@ -405,8 +450,6 @@ do_compress() {
     export chroot_dir=$1
     TARGET_FILE="$(basename ${chroot_dir})"
 
-    run_cmd "apt update"
-    install_pkg "pv awk du bzip2 lz4 gzip"
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
         case $OVERRIDER_COMPRESSION_TYPE in
         bzip2) do_tar_bzip ;;
@@ -473,7 +516,7 @@ run_cmd() {
 install_pkg()
 {
     pkg_name="$*"
-
+    run_cmd "apt update"
     run_cmd "apt install -y $pkg_name" || warn "Couldn't install $pkg_name"
     run_cmd "apt clean"
 }
