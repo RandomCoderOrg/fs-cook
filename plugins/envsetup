@@ -65,7 +65,7 @@ do_mount() {
     if ! is_mounted "$chroot_dir/dev" >>/dev/null; then
       shout "mounting: $chroot_dir/dev"
       $SUDO mount -o bind /dev "$chroot_dir"/dev
-      $SUDO mount -o bind /dev/pts "$chroot_dir"/dev/pts
+      $SUDO mount --bind /dev/pts "$chroot_dir"/dev/pts
     fi
 
     if ! is_mounted "$chroot_dir"/proc >>/dev/null; then
@@ -340,7 +340,7 @@ setup_user()
     install_pkg "openssl"   
     run_cmd "$CMD"
     run_cmd "$pass_set_cmd"
-    
+
 }
 arch_translate() {
     arch=$1
