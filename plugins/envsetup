@@ -216,7 +216,7 @@ do_debootstrap() {
         esac
     fi
 
-    if ! $DEVCONTAINER; then
+    if ! $DEVCONTAINER || ! $DISABLE_LOCAL_DEBOOTSTRAP; then
         _debootstrap="$ROOT_DIR/core/debootstrap/debootstrap"
     else
         _debootstrap=$(which debootstrap)
