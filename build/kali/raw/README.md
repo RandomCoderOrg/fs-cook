@@ -1,5 +1,4 @@
 ## Building raw fs with docker
-these implementation is initiated to remove condition ( linux os must )
 
 ### Build Example
 

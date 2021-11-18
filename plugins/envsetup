@@ -382,7 +382,7 @@ setup_user()
 
     # create user
     CMD="useradd -m \
-    -p \$(openssl passwd -1 $_passwd) \
+    -p \$\(openssl passwd -1 $_passwd\) \
     -G sudo \
     -d /home/$_user \
     -g $gid_val \
@@ -519,7 +519,7 @@ do_tar_bzip() {
 }
 
 run_cmd() {
-    local command="$*"
+    local command=$*
     do_chroot_ae "$chroot_dir" "$command"
 }
 
