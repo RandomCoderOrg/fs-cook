@@ -79,6 +79,28 @@ do_mount() {
     fi
 }
 
+do_unmount()
+{
+    local chroot_dir=$1
+    points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
+    see_for_directory "$points"
+    if is_mounted "$chroot_dir/dev" >>/dev/null; then
+      shout "unmounting: $chroot_dir/dev"
+      $SUDO umount "$chroot_dir"/dev/pts
+      $SUDO umount "$chroot_dir"/dev
+    fi
+
+    if is_mounted "$chroot_dir"/proc >>/dev/null; then
+      shout "unmounting: $chroot_dir/proc"
+      $SUDO umount $chroot_dir/proc
+    fi
+
+    if is_mounted "$chroot_dir"/sys >>/dev/null; then
+      shout "unmounting: $chroot_dir/sys"
+      $SUDO umount "$chroot_dir"/sys
+    fi
+}
+
 is_mounted() {
     local chroot_dir=$1
     if [ -d "$chroot_dir" ]; then
@@ -260,7 +282,6 @@ do_debootstrap() {
     do_second_stage "$target_dir" "$arch"
 
         install_pkg "pv \
-        awk \
         bzip2 \
         lz4 \
         gzip \
@@ -312,12 +333,12 @@ do_debootstrap() {
     fi
 }
 
-setup_user_env() {
-    export _user
-    export _passwd
-    export _pass_cmd
+setup_user()
+{     
+    default_uid=1001
+    default_gid=1001
 
-    if [ -n "$FS_USER" ]; then
+        if [ -n "$FS_USER" ]; then
         _user=$FS_USER
     else
         warn "username not set in \$\"FS_USER\""
@@ -327,22 +348,11 @@ setup_user_env() {
 
     if [ -n "$FS_PASSWD" ]; then
         _passwd=$FS_PASSWD
-        _pass_cmd="-p $(openssl passwd -1 $_passwd)"
-    elif [ -z "$FS_USER" ]; then
+    else
         _passwd="fs-cook-${RANDOM}"
         warn "password not set in \$\"FS_PASSWD\""
         msg "defaulting to $_passwd"
-        _pass_cmd="-p $(openssl passwd -1 $_passwd)"
     fi
-    
-}
-
-setup_user()
-{
-    setup_user_env
-     
-    default_uid=1001
-    default_gid=1001
 
     # SUDO setup
     if ! $ENABLE_PASSWD; then
@@ -372,7 +382,8 @@ setup_user()
 
     # create user
     CMD="useradd -m \
-    $_pass_cmd -G sudo \
+    -p $(openssl passwd -1 $_passwd) \
+    -G sudo \
     -d /home/$_user \
     -g $gid_val \
     -u $uid_val \
