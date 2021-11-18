@@ -19,7 +19,7 @@ export FS_PASS
 SUITE="kali-rolling"
 FS_USER="kali"
 FS_PASS="kali" # no need to sepecify FS_UID & FS_GID cause default is 1001
-OVERRIDER_MIRROR="http://kali.download/kali"
+# OVERRIDER_MIRROR="http://kali.download/kali"
 frn="out/${SUITE}-raw"
 INCLUDE_PACKAGES="sudo apt-utils"
 OVERRIDER_COMPRESSION_TYPE="gzip"

@@ -261,7 +261,7 @@ do_debootstrap() {
 
         install_pkg "pv \
         awk \
-        du bzip2 \
+        bzip2 \
         lz4 \
         gzip \
         apt-utils \
@@ -291,7 +291,6 @@ do_debootstrap() {
         libgcc1 \
         libkrb5-3 \
         libgssapi-krb5-2 \
-        libicu[0-9][0-9] \
         liblttng-ust0 \
         libstdc++6 \
         zlib1g \
