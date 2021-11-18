@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:impish
 
 ENV DEBIAN_FRONTEND noninteractive
 
