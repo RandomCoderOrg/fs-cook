@@ -281,13 +281,13 @@ do_debootstrap() {
 
     do_second_stage "$target_dir" "$arch"
 
+        # core packages
         install_pkg "pv \
         bzip2 \
         lz4 \
         gzip \
         apt-utils \
         openssh-client \
-        gnupg2 \
         dirmngr \
         iproute2 \
         procps \
@@ -307,7 +307,6 @@ do_debootstrap() {
         jq \
         lsb-release \
         apt-transport-https \
-        dialog \
         libc6 \
         libgcc1 \
         libkrb5-3 \
