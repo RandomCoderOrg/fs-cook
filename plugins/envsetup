@@ -25,6 +25,10 @@
 
 export ROOT_DIR
 
+if [ -z ENABLE_USER_SETUP ]; then
+    export ENABLE_USER_SETUP=false
+fi
+
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 # sudo check
