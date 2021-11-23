@@ -11,6 +11,7 @@ the top-level contains some example build scripts which are lightweight to build
 ├── build-hirsute-raw.sh -> cook.sh
 ├── build-impish-raw.sh
 ├── cook.sh
+├── build
 ├── core
 ├── out
 ├── plugins
@@ -18,6 +19,7 @@ the top-level contains some example build scripts which are lightweight to build
 └── setup.sh
 ```
 here:
+- **build**: Contains scripts, Dockerfiles for building different variants
 - **core**: contains binaries and different sources that used in the build process
 - **out**: All the filesystem and tarball packages are created here
 - **plugins**: contains scripts that combine core sources to make tarball building easy
@@ -56,7 +58,7 @@ do_debootstrap "out/fs" "arm64"
 - `build-hirsute-raw.sh`: to build raw ubuntu 21.04 tarballs
 > others are experimental ( may break things )
 
-### functions
+### functions ( <kbd>v1.0</kbd> )
 > recommended for devolopers
  
 - `do_mount()`: mounts target filesystem directories ( recursive mode ) `do mount /path/to/fs`
