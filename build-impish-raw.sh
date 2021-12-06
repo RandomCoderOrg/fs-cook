@@ -18,6 +18,20 @@ SUITE="impish"
 ENABLE_EXIT=true
 ENABLE_USER_SETUP=false
 
+additional_setup() {
+    shout "additional_setup"
+    run_cmd echo deb http://archive.ubuntu.com/ubuntu/ focal main restricted \> /etc/apt/sources.list
+    run_cmd echo deb-src http://archive.ubuntu.com/ubuntu/ focal main restricted \> /etc/apt/sources.list
+    run_cmd echo deb http://archive.ubuntu.com/ubuntu/ focal-updates universe \> /etc/apt/sources.list
+    run_cmd echo deb-src http://archive.ubuntu.com/ubuntu/ focal-updates universe \> /etc/apt/sources.list
+    run_cmd echo deb http://archive.ubuntu.com/ubuntu/ focal multiverse \> /etc/apt/sources.list
+    run_cmd echo deb-src http://archive.ubuntu.com/ubuntu/ focal multiverse \> /etc/apt/sources.list
+
+    run_cmd "apt-get update"
+
+    install_pkg "lz4 bzip2 gzip bc pv"
+}
+
 do_debootstrap "${frn}-arm64" arm64
 do_compress    "${frn}-arm64"
 do_debootstrap "${frn}-armhf" armhf
