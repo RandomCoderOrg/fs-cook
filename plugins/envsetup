@@ -285,50 +285,12 @@ do_debootstrap() {
 
     do_second_stage "$target_dir" "$arch"
 
-        # core packages
-        install_pkg "pv \
-        bzip2 \
-        lz4 \
-        gzip \
-        apt-utils \
-        openssh-client \
-        dirmngr \
-        iproute2 \
-        procps \
-        lsof \
-        htop \
-        net-tools \
-        psmisc \
-        curl \
-        wget \
-        rsync \
-        ca-certificates \
-        unzip \
-        zip \
-        nano \
-        vim-tiny \
-        less \
-        jq \
-        lsb-release \
-        apt-transport-https \
-        libc6 \
-        libgcc1 \
-        libkrb5-3 \
-        libgssapi-krb5-2 \
-        liblttng-ust0 \
-        libstdc++6 \
-        zlib1g \
-        locales \
-        sudo \
-        ncdu \
-        man-db \
-        strace \
-        manpages \
-        manpages-dev \
-        init-system-helpers"
-
     if $ENABLE_USER_SETUP; then
         setup_user
+    fi
+
+    if [ "$(type -t additional_setup)" == "function" ]; then
+        additional_setup
     fi
 
     if ! $NO_COMPRESSION; then
