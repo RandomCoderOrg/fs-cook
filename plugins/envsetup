@@ -61,6 +61,12 @@ msg() {
 }
 # lshout () { echo -e "${*}";:; }
 
+trim_quotes() {
+    # Usage: trim_quotes "string"
+    : "${1//\'}"
+    printf '%s\n' "${_//\"}"
+}
+
 do_mount() {
     local chroot_dir=$1
     points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
@@ -358,7 +364,7 @@ setup_user()
 
     run_cmd "apt update"
     install_pkg "openssl"   
-    run_cmd "$CMD"
+    run_cmd "$(trim_quotes $CMD)"
     run_cmd "$pass_set_cmd"
 
 }
