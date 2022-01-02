@@ -32,11 +32,11 @@ additional_setup() {
     install_pkg "lz4 bzip2 gzip bc pv"
 }
 
-do_debootstrap "${frn}-arm64" arm64
+do_build "${frn}-arm64" arm64
 do_compress    "${frn}-arm64"
-do_debootstrap "${frn}-armhf" armhf
+do_build "${frn}-armhf" armhf
 do_compress    "${frn}-armhf"
-do_debootstrap "${frn}-amd64" amd64
+do_build "${frn}-amd64" amd64
 do_compress    "${frn}-amd64"
 
 do_unmount "${frn}-arm64"

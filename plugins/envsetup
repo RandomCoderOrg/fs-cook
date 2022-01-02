@@ -226,7 +226,7 @@ includes_packages() {
     shout "$x includes processed "
 }
 
-do_debootstrap() {
+do_build() {
     export target_dir="$1"
     export arch="$2"
 

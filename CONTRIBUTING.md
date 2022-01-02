@@ -39,9 +39,9 @@ contains functions that can be used for cmd line building and integrating in scr
 do_mount "/path/to/fs"
 ```
 
-<kbd>do_debootstrap()</kbd> bootstraps linux to a directories of specified arch
+<kbd>do_build()</kbd> bootstraps linux to a directories of specified arch
 ```bash
-do_debootstrap "out/udroid-test" "arm64"
+do_build "out/udroid-test" "arm64"
 ```
 ###### TODO ( need to write more )
 
@@ -51,7 +51,7 @@ do_debootstrap "out/udroid-test" "arm64"
 ```bash
 source plugins/envsetup
 SUITE=impish
-do_debootstrap "out/fs" "arm64"
+do_build "out/fs" "arm64"
 ```
 ### Quick build scripts
 - `build-impish-raw.sh`: to build raw ubuntu 21.10 tarballs
@@ -70,7 +70,7 @@ do_debootstrap "out/fs" "arm64"
 - `no_to_directory()`: exits if directory given is present
 - `foreign_arch()`: checks does target arch matches with host architecture
 - `includes_packages()`: takes care of extrapackges when a variable `INCLUDE_PACKAGES` is set with packages
-- `do_debootstrap()`: bootstraps linux to with target arch to target directorie
+- `do_build()`: bootstraps linux to with target arch to target directorie
 - `do_second_stage()`: if foreign arch triggers second stage
 - - `do_qemu_user_emulation()` sets up qemu binaries in chroot
 - `do_chroot_ae()`: to run command in chroot

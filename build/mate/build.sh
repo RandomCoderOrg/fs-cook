@@ -48,7 +48,7 @@ function stage_one() {
     for _arch in ${BUILD_ARCH}; do
         export _arch
         msg "+ building ${_arch}"
-        do_debootstrap "${OUT_DIR}-${_arch}" "$_arch" || exit 1
+        do_build "${OUT_DIR}-${_arch}" "$_arch" || exit 1
         second_stage
     done
 }
