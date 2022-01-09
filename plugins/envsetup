@@ -84,18 +84,18 @@ do_mount() {
     points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
     see_for_directory "$points"
 
-    if ! is_mounted "$chroot_dir/dev" >>/dev/null; then
+    if ! is_mounted "$chroot_dir/dev"; then
       shout "mounting: $chroot_dir/dev"
       $SUDO mount -o bind /dev "$chroot_dir"/dev
       $SUDO mount --bind /dev/pts "$chroot_dir"/dev/pts
     fi
 
-    if ! is_mounted "$chroot_dir"/proc >>/dev/null; then
+    if ! is_mounted "$chroot_dir"/proc; then
       shout "mounting: $chroot_dir/proc"
-      $SUDO mount -t proc /proc $chroot_dir/proc
+      $SUDO mount -t proc /proc "$chroot_dir"/proc
     fi
 
-    if ! is_mounted "$chroot_dir"/sys >>/dev/null; then
+    if ! is_mounted "$chroot_dir"/sys; then
       shout "mounting: $chroot_dir/sys"
       $SUDO mount -t sysfs /sys "$chroot_dir"/sys
     fi
@@ -106,18 +106,18 @@ do_unmount()
     local chroot_dir=$1
     points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
     see_for_directory "$points"
-    if is_mounted "$chroot_dir/dev" >>/dev/null; then
+    if is_mounted "$chroot_dir/dev"; then
       shout "unmounting: $chroot_dir/dev"
       $SUDO umount "$chroot_dir"/dev/pts
       $SUDO umount "$chroot_dir"/dev
     fi
 
-    if is_mounted "$chroot_dir"/proc >>/dev/null; then
+    if is_mounted "$chroot_dir"/proc; then
       shout "unmounting: $chroot_dir/proc"
       $SUDO umount $chroot_dir/proc
     fi
 
-    if is_mounted "$chroot_dir"/sys >>/dev/null; then
+    if is_mounted "$chroot_dir"/sys; then
       shout "unmounting: $chroot_dir/sys"
       $SUDO umount "$chroot_dir"/sys
     fi
@@ -126,7 +126,7 @@ do_unmount()
 is_mounted() {
     local chroot_dir=$1
     if [ -d "$chroot_dir" ]; then
-        if mountpoint -q "$chroot_dir"; then
+        if mountpoint -q "$chroot_dir" >> /dev/null; then
             return 0
         else
             return 1
