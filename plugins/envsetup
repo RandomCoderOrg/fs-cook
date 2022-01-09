@@ -73,10 +73,10 @@ banner() {
         msg " ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::::::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::::::::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m::"
         msg " ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::::::. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m:. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m::. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m::. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m:: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m::. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:"
         msg "..:::::::::......:::.......:::......::::.......::::.......:::..::::..::"
-        msg "\e[90m© RandomCoder,SaicharanKandukuri"
+        msg "\e[90m© RandomCoderOrg,SaicharanKandukuri"
     else
         msg "${_c_magneta}fs-cook\e[0m beta by Team UDROID!...."
-        msg "\e[90m© RandomCoder,SaicharanKandukuri"
+        msg "\e[90m© RandomCoderOrg,SaicharanKandukuri"
     fi
 }
 
