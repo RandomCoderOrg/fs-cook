@@ -39,9 +39,9 @@ do_unmount   "$PREFIX-amd64"
 shout "setting up artifacts for GitHub"
 mkdir -p $SUITE-{arm64,amd64,armhf}
 
-cp $frn-arm64*tar* $SUITE-arm64
-cp $frn-armhf*tar* $SUITE-armhf
-cp $frn-amd64*tar* $SUITE-amd64
+cp -rv $frn-arm64*tar* $SUITE-arm64
+cp -rv $frn-armhf*tar* $SUITE-armhf
+cp -rv $frn-amd64*tar* $SUITE-amd64
 
 sha256sum $frn-arm64*tar* > $SUITE-arm64/SHA256SUM
 sha256sum $frn-armhf*tar* > $SUITE-arm64/SHA256SUM
