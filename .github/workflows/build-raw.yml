@@ -2,7 +2,7 @@ name: RawBuildTest
 on:
   push:
     paths:
-      - 'pulgins/*.sh'
+      - 'pulgins/*'
 jobs:
   BuildImpishRaw:
     runs-on: ubuntu-latest
