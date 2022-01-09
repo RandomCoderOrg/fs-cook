@@ -2,9 +2,9 @@
 
 ################################
 # MIT License
-# 
+#
 # Copyright (c) 2021 RandomCoderOrg,Saicharankandkuri <saicharankandukur1x1@gmail.com>
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -14,7 +14,7 @@
 # 
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -60,6 +60,12 @@ msg() {
     echo -e "${*}"
 }
 # lshout () { echo -e "${*}";:; }
+
+trim_quotes() {
+    # Usage: trim_quotes "string"
+    : "${1//\'}"
+    printf '%s\n' "${_//\"}"
+}
 
 do_mount() {
     local chroot_dir=$1
@@ -220,7 +226,7 @@ includes_packages() {
     shout "$x includes processed "
 }
 
-do_debootstrap() {
+do_build() {
     export target_dir="$1"
     export arch="$2"
 
@@ -298,70 +304,6 @@ do_debootstrap() {
     fi
 }
 
-setup_user()
-{     
-    default_uid=1001
-    default_gid=1001
-
-        if [ -n "$FS_USER" ]; then
-        _user=$FS_USER
-    else
-        warn "username not set in \$\"FS_USER\""
-        msg "defaulting to ${USER}01"
-        _user="${USER}01"
-    fi
-
-    if [ -n "$FS_PASSWD" ]; then
-        _passwd=$FS_PASSWD
-    else
-        _passwd="fs-cook-${RANDOM}"
-        warn "password not set in \$\"FS_PASSWD\""
-        msg "defaulting to $_passwd"
-    fi
-
-    # SUDO setup
-    if ! $ENABLE_PASSWD; then
-        pass_set_cmd="echo $_user ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$_user;chmod 0440 /etc/sudoers.d/$_user"
-    else
-        pass_set_cmd="echo $_user ALL=\(root\) ALL > /etc/sudoers.d/$_user;chmod 0440 /etc/sudoers.d/$_user"
-    fi
-
-    # UID setup
-    if [ -n "$FS_UID" ]; then
-        uid_val="$FS_UID"
-    else
-        uid_val="$default_uid"
-    fi
-
-    # GID setup
-    if [ -n "$FS_GID" ]; then
-        gid_val="$FS_GID"
-    else
-        gid_val="$default_gid"
-    fi
-
-    shout "setting up $_user..."
-    
-    # create user group
-    run_cmd "groupadd --gid 1001 $_user"
-
-    # create user
-    CMD="useradd -m \
-    -p \$\(openssl passwd -1 $_passwd\) \
-    -G sudo \
-    -d /home/$_user \
-    -g $gid_val \
-    -u $uid_val \
-    -k /etc/skel \
-    -s /bin/bash \
-    $_user"
-
-    run_cmd "apt update"
-    install_pkg "openssl"   
-    run_cmd "$CMD"
-    run_cmd "$pass_set_cmd"
-
-}
 arch_translate() {
     arch=$1
     export t_arch
@@ -406,7 +348,7 @@ do_qemu_user_emulation() {
 }
 
 do_chroot_ae() {
-    local chroot_dir="$1"
+    local chroot_dir=$1
     shift
     local command=$*
     do_mount "$chroot_dir"
