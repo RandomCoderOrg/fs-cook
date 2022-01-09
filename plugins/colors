@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-RST="\e[0m"
-RED="\e[1;31m" # *This is bold
-GREEN="\e[1;32m"
-BLUE="\e[34m"
-NC="\e[0m"
-DC=${BLUE}

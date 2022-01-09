@@ -41,30 +41,42 @@ if [ "$(id -u)" != "0" ]; then
     fi
 fi
 
-die() {
-    echo -e "?? Error ${*}"
-    if $ENABLE_EXIT; then
-        exit 1
-    fi
-    :
-}
-warn() {
-    echo -e "!! ${*}"
-    :
-}
-shout() {
-    echo -e "=> ${*}"
-    :
-}
-msg() {
-    echo -e "${*}"
-}
+_c_magneta="\e[95m"
+_c_green="\e[32m"
+_c_red="\e[31m"
+_c_blue="\e[34m"
+
+die()    { echo -e "${_c_red}[E] ${*}${RST}";exit 1;:;}
+warn()   { echo -e "${_c_red}[W] ${*}${RST}";:;}
+shout()  { echo -e "${_c_blue}[-] ${*}${RST}";:;}
+lshout() { echo -e "${_c_blue}-> ${*}${RST}";:;}
+msg()    { echo -e "${*} \e[0m" >&2;:;}
 # lshout () { echo -e "${*}";:; }
+
 
 trim_quotes() {
     # Usage: trim_quotes "string"
     : "${1//\'}"
     printf '%s\n' "${_//\"}"
+}
+
+banner() {
+    tty_width=$(stty size | cut -d ' ' -f 2)
+
+    if ((tty_width >= 80)); then
+        msg "'${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m::::::::::::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m:"
+        msg " ${_c_magneta}#\e[0m${_c_magneta}#\e[0m.....::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m... ${_c_magneta}#\e[0m${_c_magneta}#\e[0m::::::::::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m... ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:'${_c_magneta}#\e[0m${_c_magneta}#\e[0m.... ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:'${_c_magneta}#\e[0m${_c_magneta}#\e[0m.... ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m::"
+        msg " ${_c_magneta}#\e[0m${_c_magneta}#\e[0m::::::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::..::::::::::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::..:: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:'${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::"
+        msg " ${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m::::::::::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m::::::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m::::"
+        msg " ${_c_magneta}#\e[0m${_c_magneta}#\e[0m...:::::..... ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::::::::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m::::::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::"
+        msg " ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::::::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::::::::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m::"
+        msg " ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:::::::. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m::'${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m:. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m::. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m::. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m${_c_magneta}#\e[0m:: ${_c_magneta}#\e[0m${_c_magneta}#\e[0m::. ${_c_magneta}#\e[0m${_c_magneta}#\e[0m:"
+        msg "..:::::::::......:::.......:::......::::.......::::.......:::..::::..::"
+        msg "\e[90m© RandomCoder,SaicharanKandukuri"
+    else
+        msg "${_c_magneta}fs-cook\e[0m beta by Team UDROID!...."
+        msg "\e[90m© RandomCoder,SaicharanKandukuri"
+    fi
 }
 
 do_mount() {
@@ -229,6 +241,7 @@ includes_packages() {
 do_build() {
     export target_dir="$1"
     export arch="$2"
+    export CUR_BUILD_ARCH=$arch
 
     local NO_COMPRESSION
 
@@ -437,3 +450,5 @@ install_pkg()
     run_cmd "apt install -y $pkg_name" || warn "Couldn't install $pkg_name"
     run_cmd "apt clean"
 }
+
+banner
