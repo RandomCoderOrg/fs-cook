@@ -52,8 +52,6 @@ warn()   { echo -e "${_c_red}[W] ${*}${RST}";:;}
 shout()  { echo -e "${_c_blue}[-] ${*}${RST}";:;}
 lshout() { echo -e "${_c_blue}-> ${*}${RST}";:;}
 msg()    { echo -e "${*} \e[0m" >&2;:;}
-# lshout () { echo -e "${*}";:; }
-
 
 trim_quotes() {
     # Usage: trim_quotes "string"
