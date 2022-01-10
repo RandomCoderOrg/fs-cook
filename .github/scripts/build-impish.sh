@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-toplevel=$(git rev-parse --show-toplevel)
-
-cd $toplevel || exit 1
-
 source plugins/envsetup
 
 export OVERRIDER_COMPRESSION_TYPE
@@ -37,12 +33,15 @@ do_unmount   "$PREFIX-armhf"
 do_unmount   "$PREFIX-amd64"
 
 shout "setting up artifacts for GitHub"
-mkdir -p $SUITE-{arm64,amd64,armhf}
+msg "creating $SUITE-{arm64,amd64,armhf} directories"
+mkdir -pv $SUITE-{arm64,amd64,armhf}
 
+msg "copying tarballs to directories"
 cp -rv $frn-arm64*tar* $SUITE-arm64
 cp -rv $frn-armhf*tar* $SUITE-armhf
 cp -rv $frn-amd64*tar* $SUITE-amd64
 
+msg "calculating sha256sums"
 sha256sum $frn-arm64*tar* > $SUITE-arm64/SHA256SUM
 sha256sum $frn-armhf*tar* > $SUITE-arm64/SHA256SUM
 sha256sum $frn-amd64*tar* > $SUITE-arm64/SHA256SUM
