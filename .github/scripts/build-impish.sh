@@ -6,7 +6,7 @@ export OVERRIDER_COMPRESSION_TYPE
 export ENABLE_EXIT
 export ENABLE_USER_SETUP
 
-SUITE="hirsute"
+SUITE="impish"
 frn="out/$SUITE-raw"
 OVERRIDER_COMPRESSION_TYPE="gzip"
 ENABLE_EXIT=true
@@ -14,10 +14,10 @@ ENABLE_USER_SETUP=false
 PREFIX="${frn}"
 
 additional_setup() {
-    run_cmd echo deb $MIRROR $SUITE main restricted \> /etc/apt/sources.list
-    run_cmd echo deb-src $MIRROR $SUITE main restricted \> /etc/apt/sources.list
-    run_cmd echo deb $MIRROR $SUITE-updates multiverse \> /etc/apt/sources.list
-    run_cmd echo deb-src $MIRROR $SUITE-updates multiverser \> /etc/apt/sources.list
+    run_cmd echo deb $MIRROR $SUITE main restricted > /etc/apt/sources.list
+    run_cmd echo deb-src $MIRROR $SUITE main restricted > /etc/apt/sources.list
+    run_cmd echo deb $MIRROR $SUITE-updates multiverse > /etc/apt/sources.list
+    run_cmd echo deb-src $MIRROR $SUITE-updates multiverser > /etc/apt/sources.list
 }
 
 do_build     "$PREFIX-arm64" arm64
