@@ -1,4 +1,4 @@
-name: RawBuildTest
+name: build-ubuntu-raw
 on: [push]
 jobs:
   BuildKali:

@@ -38,6 +38,7 @@ additional_setup() {
     # install desktop
     shout "installing desktop"
     run_cmd apt update
+    run_cmd apt upgrade -y
     run_cmd apt install -y kali-desktop-xfce4
 
     # install kali-tools
