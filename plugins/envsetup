@@ -438,8 +438,7 @@ do_tar_bzip() {
 }
 
 run_cmd() {
-    local chroot_dir="$1"
-    local command="$2"
+    local command=$*
     do_chroot_ae "$chroot_dir" "$command"
 }
 
