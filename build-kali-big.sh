@@ -59,7 +59,7 @@ do_unmount   "$PREFIX-amd64"
 
 shout "setting up rootfs!"
 msg "creating $SUITE-{arm64,amd64,armhf} directories"
-mkdir -pv $SUITE-{arm64,amd64,armhf}
+mkdir -pv $SUITE-big-{arm64,amd64,armhf}
 
 msg "copying tarballs to directories"
 mv $frn-arm64*tar* $SUITE-arm64
