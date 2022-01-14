@@ -15,7 +15,7 @@ jobs:
         run: sudo apt update; sudo apt install git build-essential binfmt-support qemu-user-static debootstrap -y
       
       - name: Trigger fs-cook
-        run: bash .github/scripts/kali.sh
+        run: bash .github/scripts/build-kali.sh
       
       - name: save arm64 builds
         uses: actions/upload-artifact@v2
