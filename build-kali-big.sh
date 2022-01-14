@@ -32,6 +32,7 @@ OVERRIDER_COMPRESSION_TYPE="gzip"
 ENABLE_EXIT=true
 DISABLE_LOCAL_DEBOOTSTRAP=true
 ENABLE_USER_SETUP=false
+PREFIX=$frn
 
 additional_setup() {
     # install desktop
