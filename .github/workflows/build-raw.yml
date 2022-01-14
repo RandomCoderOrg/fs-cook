@@ -68,3 +68,36 @@ jobs:
         with:
           name: hirsute-raw-amd64
           path: hirsute-amd64
+  BuidJammyRaw:
+    name: build Jammy
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+      
+      - name: Docker Setup QEMU
+        uses: docker/setup-qemu-action@v1.2.0
+      
+      - name: Satify Dependencies
+        run: sudo apt update; sudo apt install git build-essential binfmt-support qemu-user-static debootstrap -y
+      
+      - name: Trigger fs-cook
+        run: bash .github/scripts/build-hirsute.sh
+      
+      - name: save arm64 builds
+        uses: actions/upload-artifact@v2
+        with:
+          name: jammy-raw-arm64
+          path: jammy-arm64
+      
+      - name: save armhf builds
+        uses: actions/upload-artifact@v2
+        with:
+          name: jammy-raw-armhf
+          path: jammy-armhf
+      
+      - name: save amd64 builds
+        uses: actions/upload-artifact@v2
+        with:
+          name: jammy-raw-amd64
+          path: jammy-amd64
