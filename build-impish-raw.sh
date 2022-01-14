@@ -20,12 +20,12 @@ ENABLE_USER_SETUP=false
 
 additional_setup() {
     shout "additional_setup"
-    run_cmd echo deb http://archive.ubuntu.com/ubuntu/ focal main restricted \> /etc/apt/sources.list
-    run_cmd echo deb-src http://archive.ubuntu.com/ubuntu/ focal main restricted \> /etc/apt/sources.list
-    run_cmd echo deb http://archive.ubuntu.com/ubuntu/ focal-updates universe \> /etc/apt/sources.list
-    run_cmd echo deb-src http://archive.ubuntu.com/ubuntu/ focal-updates universe \> /etc/apt/sources.list
-    run_cmd echo deb http://archive.ubuntu.com/ubuntu/ focal multiverse \> /etc/apt/sources.list
-    run_cmd echo deb-src http://archive.ubuntu.com/ubuntu/ focal multiverse \> /etc/apt/sources.list
+    run_cmd echo deb $MIRROR focal main restricted \> /etc/apt/sources.list
+    run_cmd echo deb-src $MIRROR focal main restricted \> /etc/apt/sources.list
+    run_cmd echo deb $MIRROR focal-updates universe \> /etc/apt/sources.list
+    run_cmd echo deb-src $MIRROR focal-updates universe \> /etc/apt/sources.list
+    run_cmd echo deb $MIRROR focal multiverse \> /etc/apt/sources.list
+    run_cmd echo deb-src $MIRROR focal multiverse \> /etc/apt/sources.list
 
     run_cmd "apt-get update"
 
