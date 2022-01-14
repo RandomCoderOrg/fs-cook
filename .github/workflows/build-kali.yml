@@ -2,7 +2,7 @@ name: RawBuildTest
 on: [push]
 jobs:
   BuildKali:
-    name: build impish
+    name: build kali big
     runs-on: ubuntu-latest
     steps:
       - name: checkout repository
