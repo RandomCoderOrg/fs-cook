@@ -438,14 +438,9 @@ do_tar_bzip() {
 }
 
 run_cmd() {
-    do_mount "$chroot_dir"
-    if [ -d "$chroot_dir" ]; then
-    cat <<-  EOF | $SUDO chroot "$chroot_dir"
-    $command
-	EOF
-    else
-        die "chroot directory doesn't exist: $chroot_dir"
-    fi
+    local chroot_dir="$1"
+    local command="$2"
+    do_chroot_ae "$chroot_dir" "$command"
 }
 
 install_pkg()
