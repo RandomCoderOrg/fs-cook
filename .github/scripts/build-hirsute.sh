@@ -77,7 +77,7 @@ cp -rv $frn-amd64*tar* $SUITE-amd64
 
 msg "calculating sha256sums"
 sha256sum $frn-arm64*tar* > $SUITE-arm64/SHA256SUM
-sha256sum $frn-armhf*tar* > $SUITE-arm64/SHA256SUM
-sha256sum $frn-amd64*tar* > $SUITE-arm64/SHA256SUM
+sha256sum $frn-armhf*tar* > $SUITE-armhf/SHA256SUM
+sha256sum $frn-amd64*tar* > $SUITE-amd64/SHA256SUM
 
 shout "done"
