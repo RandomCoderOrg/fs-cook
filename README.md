@@ -3,8 +3,8 @@ A project written in bash to make linux tarball building process easier
 
 |  | badges |
 |--|--      |
-|build tests ( `impish`, `hirsute`, `jammy` ) | [![build-udroid](https://github.com/RandomCoderOrg/fs-cook/actions/workflows/build-udroid.yml/badge.svg)](https://github.com/RandomCoderOrg/fs-cook/actions/workflows/build-udroid.yml)
- |
+|build tests ( `impish`, `hirsute`, `jammy` ) | [![build-udroid](https://github.com/RandomCoderOrg/fs-cook/actions/workflows/build-udroid.yml/badge.svg)](https://github.com/RandomCoderOrg/fs-cook/actions/workflows/build-udroid.yml) |
+
 | FOSS LICENSE | [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRandomCoderOrg%2Ffs-cook.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FRandomCoderOrg%2Ffs-cook?ref=badge_shield)
  |
 
