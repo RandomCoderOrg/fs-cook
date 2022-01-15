@@ -1,4 +1,4 @@
-name: build-kali
+name: build-udroid
 on: [push]
 jobs:
   BuildImpishRaw:
