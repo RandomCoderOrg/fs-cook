@@ -1,5 +1,9 @@
 name: build-udroid
-on: [push]
+on:
+  push:
+    paths:
+      - '**.sh'
+      - '**.yml'
 jobs:
   BuildImpishRaw:
     name: build impish
