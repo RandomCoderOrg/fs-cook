@@ -10,7 +10,7 @@ tar \
     --exclude="${target_source}"sys/* \
     --exclude="${target_source}"tmp/* \
     --exclude="${target_source}"${0} \
-    --exclude="${target_source}${target}" \
+    --exclude="${target_source}${target}.tar.xz" \
     --exclude-caches-all \
     -cpf \
      - "${target_source}" -P \
