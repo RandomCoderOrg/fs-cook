@@ -14,6 +14,11 @@ ENABLE_USER_SETUP=false
 PREFIX="${frn}"
 
 additional_setup() {
+
+# GitHub workflow specific
+#  try to add permissions to $chroot_dir/etc/apt/sources.list
+sudo chmod +r+w $chroot_dir/etc/apt/sources.list
+
 cat <<-  EOF > $chroot_dir/etc/apt/sources.list
 # See http://help.ubuntu.com/community/UpgradeNotes for how to upgrade to
 # newer versions of the distribution.
