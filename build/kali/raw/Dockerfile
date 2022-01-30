@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 ENV DISABLE_LOCAL_DEBOOTSTRAP true
 
-RUN apt update; apt upgrade -y ;apt install -y build-essential \
+RUN apt-get update; apt-get upgrade -y ;apt-get install -y build-essential \
         qemu-user-static \
         wget \
         curl \
@@ -12,6 +12,7 @@ RUN apt update; apt upgrade -y ;apt install -y build-essential \
         gnupg \
         binfmt-support \
         debootstrap
+RUN apt-get clean
 
 ENV HOME /root
 WORKDIR ${HOME}
