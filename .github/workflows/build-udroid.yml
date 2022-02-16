@@ -2,8 +2,8 @@ name: build-udroid
 on:
   push:
     paths:
-      - '**.sh'
-      - '**.yml'
+      - "**.sh"
+      - "**.yml"
 jobs:
   BuildImpishRaw:
     name: build impish
@@ -14,25 +14,25 @@ jobs:
 
       - name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v1.2.0
-      
+
       - name: Satify Dependencies
         run: sudo apt update; sudo apt install git build-essential binfmt-support qemu-user-static debootstrap -y
-      
+
       - name: Trigger fs-cook
-        run: bash .github/scripts/build-impish.sh
-      
+        run: sudo bash .github/scripts/build-impish.sh
+
       - name: save arm64 builds
         uses: actions/upload-artifact@v2
         with:
           name: impish-raw-arm64
           path: impish-arm64
-      
+
       - name: save armhf builds
         uses: actions/upload-artifact@v2
         with:
           name: impish-raw-armhf
           path: impish-armhf
-      
+
       - name: save amd64 builds
         uses: actions/upload-artifact@v2
         with:
@@ -45,28 +45,28 @@ jobs:
     steps:
       - name: checkout repo
         uses: actions/checkout@v2
-      
+
       - name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v1.2.0
-      
+
       - name: Satify Dependencies
         run: sudo apt update; sudo apt install git build-essential binfmt-support qemu-user-static debootstrap -y
-      
+
       - name: Trigger fs-cook
-        run: bash .github/scripts/build-hirsute.sh
-      
+        run: sudo bash .github/scripts/build-hirsute.sh
+
       - name: save arm64 builds
         uses: actions/upload-artifact@v2
         with:
           name: hirsute-raw-arm64
           path: hirsute-arm64
-      
+
       - name: save armhf builds
         uses: actions/upload-artifact@v2
         with:
           name: hirsute-raw-armhf
           path: hirsute-armhf
-      
+
       - name: save amd64 builds
         uses: actions/upload-artifact@v2
         with:
@@ -78,28 +78,28 @@ jobs:
     steps:
       - name: checkout repo
         uses: actions/checkout@v2
-      
+
       - name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v1.2.0
-      
+
       - name: Satify Dependencies
         run: sudo apt update; sudo apt install git build-essential binfmt-support qemu-user-static debootstrap -y
-      
+
       - name: Trigger fs-cook
-        run: bash .github/scripts/build-jammy.sh
-      
+        run: sudo bash .github/scripts/build-jammy.sh
+
       - name: save arm64 builds
         uses: actions/upload-artifact@v2
         with:
           name: jammy-raw-arm64
           path: jammy-arm64
-      
+
       - name: save armhf builds
         uses: actions/upload-artifact@v2
         with:
           name: jammy-raw-armhf
           path: jammy-armhf
-      
+
       - name: save amd64 builds
         uses: actions/upload-artifact@v2
         with:

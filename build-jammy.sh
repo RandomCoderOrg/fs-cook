@@ -54,17 +54,20 @@ EOF
 
 }
 
-do_build       "${frn}-arm64" arm64
-do_compress    "${frn}-arm64"
-do_build       "${frn}-armhf" armhf
-do_compress    "${frn}-armhf"
-do_build       "${frn}-amd64" amd64
-do_compress    "${frn}-amd64"
+shout "Bootstrapping $SUITE...."
+do_build 	    "${frn}-arm64" arm64
+do_build 	    "${frn}-armhf" armhf
+do_build 	    "${frn}-amd64" amd64
 
-do_unmount     "${frn}-arm64"
-do_unmount     "${frn}-armhf"
-do_unmount     "${frn}-amd64"
+shout "packing up the raw file systems..."
+do_compress     "${frn}-arm64"
+do_compress    	"${frn}-armhf"
+do_compress     "${frn}-amd64"
 
-shout "Build complete..."
-ls $frn*tar*
+shout "unmounting the raw file systems from host..."
+do_unmount 	    "${frn}-arm64"
+do_unmount 	    "${frn}-armhf"
+do_unmount 	    "${frn}-amd64"
 
+shout "Build Complete.."
+ls ${frn}*tar*
