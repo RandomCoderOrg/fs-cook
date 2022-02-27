@@ -57,6 +57,9 @@ deb $MIRROR $SUITE-backports main restricted universe multiverse
 # deb-src $MIRROR $SUITE-backports main restricted universe multiverse
 
 EOF
+# clean any archive if exits
+apt clean
+
 }
 
 do_build     "$PREFIX-arm64" arm64
