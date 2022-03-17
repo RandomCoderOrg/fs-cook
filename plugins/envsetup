@@ -445,9 +445,9 @@ run_cmd() {
 install_pkg()
 {
     pkg_name="$*"
-    run_cmd "apt update"
-    run_cmd "apt install -y $pkg_name" || warn "Couldn't install $pkg_name"
-    run_cmd "apt clean"
+    run_cmd "apt-get update"
+    run_cmd "apt-get install -y $pkg_name" || warn "Couldn't install $pkg_name"
+    run_cmd "apt-get clean"
 }
 
 banner

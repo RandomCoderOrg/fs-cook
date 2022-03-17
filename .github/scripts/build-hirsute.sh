@@ -58,7 +58,7 @@ deb $MIRROR $SUITE-backports main restricted universe multiverse
 
 EOF
 # clean any archive if exits
-apt clean
+apt-get clean
 
 }
 
