@@ -52,6 +52,7 @@ deb $MIRROR $SUITE-backports main restricted universe multiverse
 # deb-src $MIRROR $SUITE-backports main restricted universe multiverse
 EOF
 
+# TODO: FOLLOW latest udroid version system ( Add props to /etc/os-release )
 }
 
 shout "Bootstrapping $SUITE...."
@@ -71,3 +72,4 @@ do_unmount 	    "${frn}-amd64"
 
 shout "Build Complete.."
 ls ${frn}*tar*
+
