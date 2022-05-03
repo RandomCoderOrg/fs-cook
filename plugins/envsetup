@@ -275,8 +275,8 @@ do_build() {
 
     shout "debootstraping $suite to $target_dir"
 
-    if [[ -n $OVERRIDER_MIRROR ]]; then
-      MIRROR="$OVERRIDER_MIRROR"
+    if [[ -n $OVERRIDE_MIRROR ]]; then
+      MIRROR="$OVERRIDE_MIRROR"
     else
       case $arch in
         amd64|i386) MIRROR="http://archive.ubuntu.com/ubuntu/" ;;
