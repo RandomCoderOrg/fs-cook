@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#shellcheck disable=SC1091
+
+# this is an example file to BUILD raw file system
+# export variable SUITE to set debootstrap suite name (default: hirsute)
+
+if [ ! -f plugins/envsetup ]; then
+    echo "ERROR: plugins/envsetup not found!"
+    exit 1
+fi
+
+source plugins/envsetup
+
+export OVERRIDER_COMPRESSION_TYPE
+export OVERRIDE_MIRROR
+export SUITE
+export ENABLE_EXIT
+export ENABLE_USER_SETUP
+
+SUITE="$0"
+frn="out/$SUITE-raw"
+OVERRIDER_COMPRESSION_TYPE="gzip"
+ENABLE_EXIT=true
+ENABLE_USER_SETUP=false
+OVERRIDE_MIRROR="http://deb.debian.org/debian"
+
+shout "Bootstrapping $SUITE...."
+do_build 	    "${frn}-arm64" arm64
+do_build 	    "${frn}-armhf" armhf
+do_build 	    "${frn}-amd64" amd64
+
+shout "packing up the raw file systems..."
+do_compress     "${frn}-arm64"
+do_compress    	"${frn}-armhf"
+do_compress     "${frn}-amd64"
+
+shout "unmounting the raw file systems from host..."
+do_unmount 	    "${frn}-arm64"
+do_unmount 	    "${frn}-armhf"
+do_unmount 	    "${frn}-amd64"
+
+shout "Build Complete.."
+ls ${frn}*tar*
