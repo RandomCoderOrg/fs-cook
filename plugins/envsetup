@@ -291,7 +291,7 @@ do_build() {
     fi
 
     # additional args
-    if [ -n $ADDITIONAL_ARGS ]; then
+    if [ -n "$ADDITIONAL_ARGS" ]; then
         add_args=$ADDITIONAL_ARGS
     else
         add_args=""
