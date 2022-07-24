@@ -10,7 +10,7 @@ export OVERRIDER_COMPRESSION_TYPE
 export ENABLE_EXIT
 export ENABLE_USER_SETUP
 
-frn="out/hirsute-raw"
+frn="out/jammy-raw"
 OVERRIDER_COMPRESSION_TYPE="gzip"
 ENABLE_EXIT=true
 ENABLE_USER_SETUP=false

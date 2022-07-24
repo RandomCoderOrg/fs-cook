@@ -11,7 +11,7 @@
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
 #
@@ -138,7 +138,7 @@ is_mounted() {
 list_parser() {
     export count
     export include_list
-    
+
     count=0
     include_list=""
 
@@ -270,7 +270,7 @@ do_build() {
                 die "Unsupported suite: $SUITE"
             fi
     else
-        suite="hirsute"
+        suite="jammy"
     fi
 
     shout "debootstraping $suite to $target_dir"
@@ -343,7 +343,7 @@ arch_translate() {
 do_second_stage() {
     chroot_dir=$1
     local arch=$2
-    
+
     dpkg_depends_on "binfmt-support"
 
     do_qemu_user_emulation
