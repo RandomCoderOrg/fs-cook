@@ -53,6 +53,13 @@ deb $MIRROR $SUITE-backports main restricted universe multiverse
 EOF
 
 # TODO: FOLLOW latest udroid version system ( Add props to /etc/os-release )
+
+# set up pv
+lshout "Setting up pv..."
+cp $ROOT_DIR/core/pv/pv-${t_arch}.deb $chroot_dir
+run_cmd "dpkg -i /pv-${t_arch}.deb"
+run_cmd "rm /pv-${t_arch}.deb"
+
 }
 
 shout "Bootstrapping $SUITE...."
