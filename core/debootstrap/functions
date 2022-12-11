@@ -237,7 +237,7 @@ detect_container () {
 		CONTAINER="lxc-libvirt"
 	elif grep -qs ^systemd-nspawn$ /run/systemd/container || grep -qs systemd-nspawn /proc/1/environ || [ "$container" = "systemd-nspawn" ]; then
 		CONTAINER="systemd-nspawn"
-	elif grep -qs '[[:space:]]/docker/.*/sys/fs/cgroup' /proc/1/mountinfo; then
+	elif grep -qs '[[:space:]]/docker/.*/sys/fs/cgroup' /proc/1/mountinfo || [ -e "/.dockerenv" ]; then
 		CONTAINER="docker"
 	else
 		CONTAINER=""
@@ -922,6 +922,8 @@ download_main () {
 						echo >>"$TARGET/debootstrap/debpaths" "$p $debdest"
 						details="done"
 						break
+					else
+						details=""
 					fi
 				done
 				if [ "$details" != "" ]; then
@@ -1364,7 +1366,7 @@ setup_merged_usr() {
 
 	if [ "$MERGED_USR" = "no" ]; then return 0; fi
 
-	local link_dir
+	local link_dir=""
 	case $ARCH in
 	    hurd-*)	return 0 ;;
 	    amd64)	link_dir="lib32 lib64 libx32" ;;

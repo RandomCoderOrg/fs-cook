@@ -1,3 +1,51 @@
+debootstrap (1.0.126+nmu1ubuntu0.2) jammy; urgency=medium
+
+  * Add (Ubuntu) lunar as a symlink to gutsy (LP: #1995612).
+
+ -- Nick Rosbrook <nick.rosbrook@canonical.com>  Thu, 03 Nov 2022 10:28:51 -0400
+
+debootstrap (1.0.126+nmu1ubuntu0.1) jammy; urgency=medium
+
+  * Add (Ubuntu) kinetic as a symlink to gutsy (LP: #1970454).
+
+ -- Graham Inggs <ginggs@ubuntu.com>  Tue, 26 Apr 2022 16:56:23 +0000
+
+debootstrap (1.0.126+nmu1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Undo the changes of the last upload. (Closes: #998867)
+
+ -- Johannes Schauer Marin Rodrigues <josch@debian.org>  Sun, 28 Nov 2021 12:38:15 +0100
+
+debootstrap (1.0.126) unstable; urgency=low
+
+  * Ensure bookworm+ suites are set up with merged-usr. (Closes: #978636)
+
+ -- Dimitri John Ledkov <dimitri.ledkov@canonical.com>  Mon, 08 Nov 2021 14:40:06 +0000
+
+debootstrap (1.0.125) unstable; urgency=medium
+
+  [ Samuel Thibault ]
+  * functions (download_main): Let the loops try the different components and
+    suites when the checksum doesn't match. This is needed when several of
+    them contain the same package name.
+
+  [ Arnaud Rebillout ]
+  * Fix auto proxy discovery (Closes: #985811)
+  * Fix detection of docker container for cgroup v2 (Closes: #985481)
+
+  [ Johannes 'josch' Schauer ]
+  * functions: define link_dir before using it.
+
+  [ Hideki Yamane ]
+  * Add (Debian) trixie as a symlink to sid.
+
+  [ Dimitri John Ledkov ]
+  * Add (Ubuntu) jammy as a symlink to gutsy.
+  * Upload to unstable.
+
+ -- Dimitri John Ledkov <dimitri.ledkov@canonical.com>  Tue, 02 Nov 2021 11:35:00 +0000
+
 debootstrap (1.0.124) experimental; urgency=medium
 
   [ Colin Watson ]

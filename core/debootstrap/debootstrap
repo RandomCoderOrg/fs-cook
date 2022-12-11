@@ -456,7 +456,10 @@ fi
 # do auto proxy discovery
 AUTOPROXY=""
 if ! doing_variant fakechroot && command -v apt-config >/dev/null; then
+    eval "$(apt-config shell AUTOPROXY Acquire::http::Proxy-Auto-Detect)"
+    if [ -z "$AUTOPROXY" ]; then
     eval "$(apt-config shell AUTOPROXY Acquire::http::ProxyAutoDetect)"
+    fi
     if [ -z "$http_proxy" ] && [ -x "$AUTOPROXY" ]; then
         http_proxy="$($AUTOPROXY)"
         if [ -n "$http_proxy" ]; then
