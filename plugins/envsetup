@@ -442,6 +442,17 @@ run_cmd() {
     do_chroot_ae "$chroot_dir" "$command"
 }
 
+run_shell_script() {
+    lshout "Running script: $1"
+    echo
+    echo
+    local script=$1
+    cp -v "$script" "$chroot_dir"
+    chmod +x "$chroot_dir/$(basename $script)"
+    do_chroot_ae "$chroot_dir" /bin/bash "/$script"
+    echo "Done running script: $1"
+}
+
 install_pkg()
 {
     pkg_name="$*"
