@@ -312,8 +312,6 @@ do_build() {
     fi
     
     shout "patching '/etc/os-release'"
-    ls $target_dir
-    ls $chroot_dir
     sed -i 's/Ubuntu/Ubuntu On Android/g' $target_dir/etc/os-release
     
     if ! $NO_COMPRESSION; then
