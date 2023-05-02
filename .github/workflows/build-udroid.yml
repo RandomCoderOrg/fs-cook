@@ -4,19 +4,23 @@ on:
     paths:
       - "**.sh"
       - "**.yml"
+  workflow_dispatch: { }
+
 jobs:
   BuidJammyRaw:
     name: build Jammy
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Docker Setup QEMU
-        uses: docker/setup-qemu-action@v1.2.0
+        uses: docker/setup-qemu-action@v2
 
       - name: Satify Dependencies
-        run: sudo apt-get update; sudo apt-get install git build-essential binfmt-support qemu-user-static debootstrap -y
+        run: |
+           sudo apt-get update
+           sudo apt-get install git build-essential binfmt-support qemu-user-static debootstrap -y
 
       - name: Trigger fs-cook
         run: sudo bash .github/scripts/build-jammy.sh
@@ -43,10 +47,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Docker Setup QEMU
-        uses: docker/setup-qemu-action@v1.2.0
+        uses: docker/setup-qemu-action@v2
 
       - name: Satify Dependencies
         run: sudo apt-get update; sudo apt-get install git build-essential binfmt-support qemu-user-static debootstrap -y
