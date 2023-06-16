@@ -456,6 +456,21 @@ run_shell_script() {
     echo "Done running script: $1"
 }
 
+COPY() {
+    local src=$1
+    local dest=$2
+
+    if [ -d "$src" ]; then
+        $SUDO cp -vr "$src" "$chroot_dir/$dest"
+    else
+        if [ -f "$src" ]; then
+            $SUDO cp -v "$src" "$chroot_dir/$dest"
+        else
+            die "Couldn't find $src, no such file or directory"
+        fi
+    fi
+}
+
 install_pkg()
 {
     pkg_name="$*"

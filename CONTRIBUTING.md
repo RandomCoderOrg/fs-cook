@@ -80,6 +80,7 @@ do_build "out/fs" "arm64"
 - - `do_tar_bzip()`: to compress in bzip format
 - - `do_tar_lz4()`: to compress in lzip/lz4 format
 - `arch_translate()`: takes care of translating arch to find qemu static builds
+- `COPY()`: to copy files to target filesystem
 - `die()`: to echo an error message & exit if `ENABLE_EXIT` is set to true
 - `warn()`: like `die()` without exit
 - `shout()`:  for printing logs
