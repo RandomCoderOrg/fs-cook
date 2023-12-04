@@ -33,11 +33,14 @@ ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 # sudo check
 if [ "$(id -u)" != "0" ]; then
-    if ! command -v sudo >/dev/null 2>&1; then
-        echo "This script requires sudo or root privileges but none present."
-        exit 1
+    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+        SUDO=""
     else
-        SUDO="$(command -v sudo)"
+        if command -v sudo &>/dev/null; then
+            SUDO="sudo"
+        else
+            die "This script requires root privileges"
+        fi
     fi
 fi
 
@@ -290,6 +293,12 @@ do_build() {
         _debootstrap=$(which debootstrap)
     fi
 
+    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+        _debootstrap="$(which debootstrap)"
+        FOREIGN=""
+        ENABLE_USER_SETUP=false
+    fi
+
     (
         $SUDO $_debootstrap \
             $FOREIGN \
@@ -301,7 +310,11 @@ do_build() {
             $MIRROR
     ) || die "Couldn't debootstrap..."
 
-    do_second_stage "$target_dir" "$arch"
+    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+        lshout "Skipping second stage for termux"
+    else
+        do_second_stage "$target_dir" "$arch"
+    fi
 
     if $ENABLE_USER_SETUP; then
         setup_user
@@ -362,7 +375,49 @@ do_qemu_user_emulation() {
     fi
 }
 
-do_chroot_ae() {
+do_chroot_proot_ae() {
+    local chroot_dir=$1
+    shift
+    local cmd_string=$*
+    local root_fs_path=${chroot_dir}
+    local container_user=root
+    
+    unset LD_PRELOAD
+    proot \
+        --link2symlink \
+        --sysvipc \
+        --kill-on-exit \
+        -b /system \
+        -b /sys \
+        -b /proc \
+        -b /dev \
+        -b /dev/urandom:/dev/random \
+        -b /proc/self/fd/1:/dev/stdout \
+        -b /proc/self/fd/2:/dev/stderr \
+        -b /proc/self/fd/0:/dev/stdin \
+        -b /proc/self/fd:/dev/fd \
+        -b /data/data/com.termux/files/usr \
+        -b /data/data/com.termux/files/home \
+        -b /data/data/com.termux/cache \
+        -b /storage/self/primary:/sdcard \
+        -b "${root_fs_path}"/tmp:/dev/shm \
+        --root-id \
+        --cwd=/root -L \
+        --kernel-release=5.4.0-faked \
+        --kill-on-exit \
+        --rootfs="${root_fs_path}" \
+        -w /root \
+            /usr/bin/env -i \
+            HOME=/root \
+            PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin \
+            TERM="$TERM" \
+            LANG=C.UTF-8 \
+            /bin/su -l $container_user \
+            $cmd_string
+
+}
+
+do_chroot_root_ae() {
     local chroot_dir=$1
     shift
     local command=$*
@@ -373,6 +428,14 @@ do_chroot_ae() {
         ) || warn "Couldn't chroot or exited with non zero..."
     else
         die "chroot directory doesn't exist: $chroot_dir"
+    fi
+}
+
+do_chroot_ae() {
+    if [ $BUILD_PALTFORM == "termux" ]; then
+        do_chroot_proot_ae "$@"
+    else
+        do_chroot_root_ae "$@"
     fi
 }
 
@@ -480,3 +543,10 @@ install_pkg()
 }
 
 banner
+
+export BUILD_PALTFORM="linux"
+
+if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+    lshout "Running on termux"
+    BUILD_PALTFORM="termux"
+fi
