@@ -234,7 +234,7 @@ includes_packages() {
     export includes
     x=0
     for item in $includes; do
-        include_final="$item"
+        #include_final="$item"
         ((x = x + 1))
     done
     shout "$x includes processed "
@@ -304,7 +304,7 @@ do_build() {
             $FOREIGN \
             --arch="$arch" \
             --no-check-gpg \
-            --include="${include_final}" \
+            --include="${includes}" \
             "$suite" \
             "$target_dir" \
             $MIRROR
