@@ -543,6 +543,11 @@ banner
 
 export BUILD_PALTFORM="linux"
 
+#Check if environment is Termux 
+if [ "$(uname -o)" = "Android" ]; then
+    export FS_COOK_PLATFORM="termux"
+fi 
+
 if [ "$FS_COOK_PLATFORM" == "termux" ]; then
     lshout "Running on termux"
     BUILD_PALTFORM="termux"
