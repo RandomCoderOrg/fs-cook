@@ -380,7 +380,6 @@ do_chroot_proot_ae() {
     shift
     local cmd_string=$*
     local root_fs_path=${chroot_dir}
-    local container_user=root
     
     unset LD_PRELOAD
     proot \
@@ -404,7 +403,6 @@ do_chroot_proot_ae() {
         --root-id \
         --cwd=/root -L \
         --kernel-release=5.4.0-faked \
-        --kill-on-exit \
         --rootfs="${root_fs_path}" \
         -w /root \
             /usr/bin/env -i \
@@ -412,7 +410,6 @@ do_chroot_proot_ae() {
             PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin \
             TERM="$TERM" \
             LANG=C.UTF-8 \
-            /bin/su -l $container_user \
             $cmd_string
 
 }
