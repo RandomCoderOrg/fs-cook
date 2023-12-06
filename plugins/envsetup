@@ -234,7 +234,7 @@ includes_packages() {
     export includes
     x=0
     for item in $includes; do
-        include_final="$item"
+        #include_final="$item"
         ((x = x + 1))
     done
     shout "$x includes processed "
@@ -304,7 +304,7 @@ do_build() {
             $FOREIGN \
             --arch="$arch" \
             --no-check-gpg \
-            --include="${include_final}" \
+            --include="${includes}" \
             "$suite" \
             "$target_dir" \
             $MIRROR
@@ -380,7 +380,6 @@ do_chroot_proot_ae() {
     shift
     local cmd_string=$*
     local root_fs_path=${chroot_dir}
-    local container_user=root
     
     unset LD_PRELOAD
     proot \
@@ -404,7 +403,6 @@ do_chroot_proot_ae() {
         --root-id \
         --cwd=/root -L \
         --kernel-release=5.4.0-faked \
-        --kill-on-exit \
         --rootfs="${root_fs_path}" \
         -w /root \
             /usr/bin/env -i \
@@ -412,7 +410,6 @@ do_chroot_proot_ae() {
             PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin \
             TERM="$TERM" \
             LANG=C.UTF-8 \
-            /bin/su -l $container_user \
             $cmd_string
 
 }
@@ -545,6 +542,11 @@ install_pkg()
 banner
 
 export BUILD_PALTFORM="linux"
+
+#Check if environment is Termux 
+if [ "$(uname -o)" = "Android" ]; then
+    export FS_COOK_PLATFORM="termux"
+fi 
 
 if [ "$FS_COOK_PLATFORM" == "termux" ]; then
     lshout "Running on termux"
