@@ -24,6 +24,17 @@
 # SOFTWARE.
 
 export ROOT_DIR
+export BUILD_PALTFORM="linux"
+
+#Check if environment is Termux
+if [ "$(uname -o)" = "Android" ]; then
+    export FS_COOK_PLATFORM="termux"
+fi
+
+if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+    lshout "Running on termux"
+    BUILD_PALTFORM="termux"
+fi
 
 if [ -z $ENABLE_USER_SETUP ]; then
     export ENABLE_USER_SETUP=false
@@ -105,24 +116,28 @@ do_mount() {
 
 do_unmount()
 {
-    local chroot_dir=$1
-    points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
-    see_for_directory "$points"
-    if is_mounted "$chroot_dir/dev"; then
-      shout "unmounting: $chroot_dir/dev"
-      $SUDO umount "$chroot_dir"/dev/pts
-      $SUDO umount "$chroot_dir"/dev
-    fi
+    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+      lshout "Skipping unmount for termux"
+    else
+      local chroot_dir=$1
+      points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
+      see_for_directory "$points"
+      if is_mounted "$chroot_dir/dev"; then
+        shout "unmounting: $chroot_dir/dev"
+        $SUDO umount "$chroot_dir"/dev/pts
+        $SUDO umount "$chroot_dir"/dev
+      fi
 
-    if is_mounted "$chroot_dir"/proc; then
-      shout "unmounting: $chroot_dir/proc"
-      $SUDO umount $chroot_dir/proc
-    fi
+      if is_mounted "$chroot_dir"/proc; then
+        shout "unmounting: $chroot_dir/proc"
+        $SUDO umount $chroot_dir/proc
+      fi
 
-    if is_mounted "$chroot_dir"/sys; then
-      shout "unmounting: $chroot_dir/sys"
-      $SUDO umount "$chroot_dir"/sys
-    fi
+      if is_mounted "$chroot_dir"/sys; then
+        shout "unmounting: $chroot_dir/sys"
+        $SUDO umount "$chroot_dir"/sys
+      fi
+    fi 
 }
 
 is_mounted() {
@@ -255,6 +270,7 @@ do_build() {
     foreign_arch "$arch"
     no_to_directory "$target_dir"
 
+
     export chroot_dir
     chroot_dir=$target_dir
 
@@ -312,6 +328,7 @@ do_build() {
 
     if [ "$FS_COOK_PLATFORM" == "termux" ]; then
         lshout "Skipping second stage for termux"
+        arch_translate "$arch"
     else
         do_second_stage "$target_dir" "$arch"
     fi
@@ -541,14 +558,4 @@ install_pkg()
 
 banner
 
-export BUILD_PALTFORM="linux"
 
-#Check if environment is Termux 
-if [ "$(uname -o)" = "Android" ]; then
-    export FS_COOK_PLATFORM="termux"
-fi 
-
-if [ "$FS_COOK_PLATFORM" == "termux" ]; then
-    lshout "Running on termux"
-    BUILD_PALTFORM="termux"
-fi
