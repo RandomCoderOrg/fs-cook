@@ -292,6 +292,22 @@ do_build() {
         suite="jammy"
     fi
 
+    #Disable cross architecture building in Termux 
+    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+        case $worker_arch in
+            aarch64) termux_arch="arm64" ;;
+            arm*) termux_arch="armhf" ;;
+            amd64|x86_64) termux_arch="amd64" ;;
+            *) die "Unknown architecture" ;;
+        esac
+        if [ "$termux_arch" != "$arch" ]; then
+            lshout "Skipping cross architecture building for Termux"
+            return 0
+        else
+            lshout "Building on Termux"
+        fi 
+    fi 
+
     shout "debootstraping $suite to $target_dir"
 
     if [[ -n $OVERRIDER_MIRROR ]]; then
