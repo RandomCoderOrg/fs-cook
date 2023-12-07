@@ -24,12 +24,24 @@
 # SOFTWARE.
 
 export ROOT_DIR
+export BUILD_PALTFORM="linux"
 
-if [ -z $ENABLE_USER_SETUP ]; then
-    export ENABLE_USER_SETUP=false
+_c_magneta="\e[95m"
+_c_green="\e[32m"
+_c_red="\e[31m"
+_c_blue="\e[34m"
+RST="\e[0m"
+
+die()    { echo -e "${_c_red}[E] ${*}${RST}";exit 1;:;}
+warn()   { echo -e "${_c_red}[W] ${*}${RST}";:;}
+shout()  { echo -e "${_c_blue}[-] ${*}${RST}";:;}
+lshout() { echo -e "${_c_blue}-> ${*}${RST}";:;}
+msg()    { echo -e "${*} \e[0m" >&2;:;}
+
+# Check if environment is Termux
+if [ "$(uname -o)" = "Android" ]; then
+    export FS_COOK_PLATFORM="termux"
 fi
-
-ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 # sudo check
 if [ "$(id -u)" != "0" ]; then
@@ -44,17 +56,11 @@ if [ "$(id -u)" != "0" ]; then
     fi
 fi
 
-_c_magneta="\e[95m"
-_c_green="\e[32m"
-_c_red="\e[31m"
-_c_blue="\e[34m"
-RST="\e[0m"
+if [ -z $ENABLE_USER_SETUP ]; then
+    export ENABLE_USER_SETUP=false
+fi
 
-die()    { echo -e "${_c_red}[E] ${*}${RST}";exit 1;:;}
-warn()   { echo -e "${_c_red}[W] ${*}${RST}";:;}
-shout()  { echo -e "${_c_blue}[-] ${*}${RST}";:;}
-lshout() { echo -e "${_c_blue}-> ${*}${RST}";:;}
-msg()    { echo -e "${*} \e[0m" >&2;:;}
+ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 trim_quotes() {
     # Usage: trim_quotes "string"
@@ -105,24 +111,28 @@ do_mount() {
 
 do_unmount()
 {
-    local chroot_dir=$1
-    points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
-    see_for_directory "$points"
-    if is_mounted "$chroot_dir/dev"; then
-      shout "unmounting: $chroot_dir/dev"
-      $SUDO umount "$chroot_dir"/dev/pts
-      $SUDO umount "$chroot_dir"/dev
-    fi
+    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+      lshout "Skipping unmount for termux"
+    else
+      local chroot_dir=$1
+      points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
+      see_for_directory "$points"
+      if is_mounted "$chroot_dir/dev"; then
+        shout "unmounting: $chroot_dir/dev"
+        $SUDO umount "$chroot_dir"/dev/pts
+        $SUDO umount "$chroot_dir"/dev
+      fi
 
-    if is_mounted "$chroot_dir"/proc; then
-      shout "unmounting: $chroot_dir/proc"
-      $SUDO umount $chroot_dir/proc
-    fi
+      if is_mounted "$chroot_dir"/proc; then
+        shout "unmounting: $chroot_dir/proc"
+        $SUDO umount $chroot_dir/proc
+      fi
 
-    if is_mounted "$chroot_dir"/sys; then
-      shout "unmounting: $chroot_dir/sys"
-      $SUDO umount "$chroot_dir"/sys
-    fi
+      if is_mounted "$chroot_dir"/sys; then
+        shout "unmounting: $chroot_dir/sys"
+        $SUDO umount "$chroot_dir"/sys
+      fi
+    fi 
 }
 
 is_mounted() {
@@ -255,6 +265,7 @@ do_build() {
     foreign_arch "$arch"
     no_to_directory "$target_dir"
 
+
     export chroot_dir
     chroot_dir=$target_dir
 
@@ -274,6 +285,24 @@ do_build() {
             fi
     else
         suite="jammy"
+    fi
+
+    #Disable cross architecture building in Termux
+    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+        case $worker_arch in
+            aarch64) termux_arch="arm64" ;;
+            arm*) termux_arch="armhf" ;;
+            amd64|x86_64) termux_arch="amd64" ;;
+            *) die "Unknown architecture" ;;
+        esac
+        if [ "$termux_arch" != "$arch" ]; then
+            lshout "Skipping cross architecture building for termux"
+            termux_build=false
+            return 0
+        else
+            lshout "Building on Termux"
+            termux_build=true
+        fi
     fi
 
     shout "debootstraping $suite to $target_dir"
@@ -312,6 +341,7 @@ do_build() {
 
     if [ "$FS_COOK_PLATFORM" == "termux" ]; then
         lshout "Skipping second stage for termux"
+        arch_translate "$arch"
     else
         do_second_stage "$target_dir" "$arch"
     fi
@@ -441,6 +471,11 @@ do_compress() {
     export TARGET_FILE
     export chroot_dir=$1
     TARGET_FILE="$(basename ${chroot_dir})"
+    
+    if [ "$termux_build" == "false" ]; then
+        lshout "skip compressing $chroot_dir "
+        return 0
+    fi
 
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
         case $OVERRIDER_COMPRESSION_TYPE in
@@ -541,14 +576,8 @@ install_pkg()
 
 banner
 
-export BUILD_PALTFORM="linux"
-
-#Check if environment is Termux 
-if [ "$(uname -o)" = "Android" ]; then
-    export FS_COOK_PLATFORM="termux"
-fi 
-
 if [ "$FS_COOK_PLATFORM" == "termux" ]; then
     lshout "Running on termux"
     BUILD_PALTFORM="termux"
 fi
+
