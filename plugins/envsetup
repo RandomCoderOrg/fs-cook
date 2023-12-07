@@ -297,11 +297,9 @@ do_build() {
         esac
         if [ "$termux_arch" != "$arch" ]; then
             lshout "Skipping cross architecture building for termux"
-            termux_build=false
             return 0
         else
             lshout "Building on Termux"
-            termux_build=true
         fi
     fi
 
@@ -472,9 +470,11 @@ do_compress() {
     export chroot_dir=$1
     TARGET_FILE="$(basename ${chroot_dir})"
     
-    if [ "$termux_build" == "false" ]; then
-        lshout "skip compressing $chroot_dir "
-        return 0
+    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+        if [ ! -d "$chroot_dir" ]; then
+            lshout "skip compressing $chroot_dir "
+            return 0
+        fi 
     fi
 
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
