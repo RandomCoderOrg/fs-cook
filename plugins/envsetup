@@ -221,7 +221,9 @@ see_for_directory() {
 no_to_directory() {
     dir="$1"
     if [ -d "$dir" ]; then
-        if ! $NO_DIR_CHECK_OVERRIDE; then
+        if [ "$NO_DIR_CHECK_OVERRIDE" == "true" ]; then
+            return 0
+        else
             die "directory exits: $dir"
         fi
     fi
