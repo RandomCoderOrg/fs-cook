@@ -112,7 +112,7 @@ do_mount() {
 do_unmount()
 {
     if [ "$FS_COOK_PLATFORM" == "termux" ]; then
-      lshout "Skipping unmount for termux"
+      lshout "Skip unmount for termux"
     else
       local chroot_dir=$1
       points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
@@ -263,10 +263,26 @@ do_build() {
         export DISABLE_USER_SETUP=false
     fi
 
-    includes_packages
     foreign_arch "$arch"
-    no_to_directory "$target_dir"
 
+    #Disable cross architecture building in Termux
+    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+        case $worker_arch in
+            aarch64) termux_arch="arm64" ;;
+            arm*) termux_arch="armhf" ;;
+            amd64|x86_64) termux_arch="amd64" ;;
+            *) die "Unknown architecture" ;;
+        esac
+        if [ "$termux_arch" != "$arch" ]; then
+            lshout "Skip building $target_dir for termux"
+            return 0
+        else
+            lshout "Building on Termux"
+        fi
+    fi
+    
+    includes_packages
+    no_to_directory "$target_dir"
 
     export chroot_dir
     chroot_dir=$target_dir
@@ -287,22 +303,6 @@ do_build() {
             fi
     else
         suite="jammy"
-    fi
-
-    #Disable cross architecture building in Termux
-    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
-        case $worker_arch in
-            aarch64) termux_arch="arm64" ;;
-            arm*) termux_arch="armhf" ;;
-            amd64|x86_64) termux_arch="amd64" ;;
-            *) die "Unknown architecture" ;;
-        esac
-        if [ "$termux_arch" != "$arch" ]; then
-            lshout "Skipping cross architecture building for termux"
-            return 0
-        else
-            lshout "Building on Termux"
-        fi
     fi
 
     shout "debootstraping $suite to $target_dir"
@@ -434,7 +434,6 @@ do_chroot_proot_ae() {
         --cwd=/root -L \
         --kernel-release=5.4.0-faked \
         --rootfs="${root_fs_path}" \
-        -w /root \
             /usr/bin/env -i \
             HOME=/root \
             PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin \
@@ -474,7 +473,7 @@ do_compress() {
     
     if [ "$FS_COOK_PLATFORM" == "termux" ]; then
         if [ ! -d "$chroot_dir" ]; then
-            lshout "skip compressing $chroot_dir "
+            lshout "Skip compressing $chroot_dir "
             return 0
         fi 
     fi
