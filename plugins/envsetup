@@ -323,6 +323,7 @@ do_build() {
     fi
 
     if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+        dpkg_depends_on debootstrap
         _debootstrap="$(which debootstrap)"
         FOREIGN=""
         ENABLE_USER_SETUP=false
@@ -346,7 +347,7 @@ do_build() {
         do_second_stage "$target_dir" "$arch"
     fi
 
-    if $ENABLE_USER_SETUP; then
+    if [ "$ENABLE_USER_SETUP" == "true" ]; then
         setup_user
     fi
 
@@ -403,6 +404,16 @@ do_qemu_user_emulation() {
 #         dpkg_depends_on "qemu-user-static"
         $SUDO cp core/qemu-static/qemu-"$t_arch"-static "$chroot_dir/usr/bin/"
     fi
+}
+
+setup_user() {
+    shout "Setting up user"
+    cp plugins/setup-user.sh $chroot_dir
+    sed -i "s/FS_USER/$FS_USER/g" $chroot_dir/setup-user.sh
+    sed -i "s/FS_PASS/$FS_PASS/g" $chroot_dir/setup-user.sh
+    run_cmd chmod +x /setup-user.sh
+    run_cmd /bin/bash /setup-user.sh
+    run_cmd rm -rf /setup-user.sh
 }
 
 do_chroot_proot_ae() {
