@@ -411,9 +411,10 @@ setup_user() {
     cp plugins/setup-user.sh $chroot_dir
     sed -i "s/FS_USER/$FS_USER/g" $chroot_dir/setup-user.sh
     sed -i "s/FS_PASS/$FS_PASS/g" $chroot_dir/setup-user.sh
-    run_cmd chmod +x /setup-user.sh
-    run_cmd /bin/bash /setup-user.sh
-    run_cmd rm -rf /setup-user.sh
+    install_pkg "openssl"
+    run_cmd "chmod +x /setup-user.sh"
+    run_cmd "/bin/bash /setup-user.sh"
+    run_cmd "rm -rf /setup-user.sh"
 }
 
 do_chroot_proot_ae() {
