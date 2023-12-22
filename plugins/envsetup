@@ -112,7 +112,7 @@ do_mount() {
 do_unmount()
 {
     if [ "$FS_COOK_PLATFORM" == "termux" ]; then
-      lshout "Skipping unmount for termux"
+      lshout "Skip unmount for termux"
     else
       local chroot_dir=$1
       points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
@@ -221,7 +221,9 @@ see_for_directory() {
 no_to_directory() {
     dir="$1"
     if [ -d "$dir" ]; then
-        if ! $NO_DIR_CHECK_OVERRIDE; then
+        if [ "$NO_DIR_CHECK_OVERRIDE" == "true" ]; then
+            return 0
+        else
             die "directory exits: $dir"
         fi
     fi
@@ -261,10 +263,26 @@ do_build() {
         export DISABLE_USER_SETUP=false
     fi
 
-    includes_packages
     foreign_arch "$arch"
-    no_to_directory "$target_dir"
 
+    #Disable cross architecture building in Termux
+    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+        case $worker_arch in
+            aarch64) termux_arch="arm64" ;;
+            arm*) termux_arch="armhf" ;;
+            amd64|x86_64) termux_arch="amd64" ;;
+            *) die "Unknown architecture" ;;
+        esac
+        if [ "$termux_arch" != "$arch" ]; then
+            lshout "Skip building $target_dir for termux"
+            return 0
+        else
+            lshout "Building on Termux"
+        fi
+    fi
+    
+    includes_packages
+    no_to_directory "$target_dir"
 
     export chroot_dir
     chroot_dir=$target_dir
@@ -287,24 +305,6 @@ do_build() {
         suite="jammy"
     fi
 
-    #Disable cross architecture building in Termux
-    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
-        case $worker_arch in
-            aarch64) termux_arch="arm64" ;;
-            arm*) termux_arch="armhf" ;;
-            amd64|x86_64) termux_arch="amd64" ;;
-            *) die "Unknown architecture" ;;
-        esac
-        if [ "$termux_arch" != "$arch" ]; then
-            lshout "Skipping cross architecture building for termux"
-            termux_build=false
-            return 0
-        else
-            lshout "Building on Termux"
-            termux_build=true
-        fi
-    fi
-
     shout "debootstraping $suite to $target_dir"
 
     if [[ -n $OVERRIDER_MIRROR ]]; then
@@ -323,6 +323,7 @@ do_build() {
     fi
 
     if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+        dpkg_depends_on debootstrap
         _debootstrap="$(which debootstrap)"
         FOREIGN=""
         ENABLE_USER_SETUP=false
@@ -346,7 +347,7 @@ do_build() {
         do_second_stage "$target_dir" "$arch"
     fi
 
-    if $ENABLE_USER_SETUP; then
+    if [ "$ENABLE_USER_SETUP" == "true" ]; then
         setup_user
     fi
 
@@ -405,6 +406,17 @@ do_qemu_user_emulation() {
     fi
 }
 
+setup_user() {
+    shout "Setting up user"
+    cp plugins/setup-user.sh $chroot_dir
+    sed -i "s/FS_USER/$FS_USER/g" $chroot_dir/setup-user.sh
+    sed -i "s/FS_PASS/$FS_PASS/g" $chroot_dir/setup-user.sh
+    install_pkg "openssl"
+    run_cmd "chmod +x /setup-user.sh"
+    run_cmd "/bin/bash /setup-user.sh"
+    run_cmd "rm -rf /setup-user.sh"
+}
+
 do_chroot_proot_ae() {
     local chroot_dir=$1
     shift
@@ -434,7 +446,6 @@ do_chroot_proot_ae() {
         --cwd=/root -L \
         --kernel-release=5.4.0-faked \
         --rootfs="${root_fs_path}" \
-        -w /root \
             /usr/bin/env -i \
             HOME=/root \
             PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin \
@@ -472,9 +483,11 @@ do_compress() {
     export chroot_dir=$1
     TARGET_FILE="$(basename ${chroot_dir})"
     
-    if [ "$termux_build" == "false" ]; then
-        lshout "skip compressing $chroot_dir "
-        return 0
+    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+        if [ ! -d "$chroot_dir" ]; then
+            lshout "Skip compressing $chroot_dir "
+            return 0
+        fi 
     fi
 
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then

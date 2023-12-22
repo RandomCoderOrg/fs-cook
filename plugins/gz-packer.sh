@@ -3,8 +3,8 @@
 target=$1
 
 tar \
-    --exclude={/data,/dev,/apex,/vendor,/system,/sdcard} \
-    --exclude={/proc/*,/sys/*,/tmp/*,/mnt/*,/media/*,/lost+found/*} \
+    --exclude={/data,/apex,/vendor,/system,/sdcard} \
+    --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/mnt/*,/media/*,/lost+found/*} \
     --exclude="*.l2s.*" \
     --exclude=/${0} \
     --exclude="/${target}.tar.gz" \
