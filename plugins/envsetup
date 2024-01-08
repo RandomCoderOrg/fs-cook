@@ -418,6 +418,7 @@ setup_user() {
 }
 
 do_chroot_proot_ae() {
+    dpkg_depends_on proot
     local chroot_dir=$1
     shift
     local cmd_string=$*
@@ -495,6 +496,7 @@ do_compress() {
         bzip2) do_tar_bzip ;;
         gzip) do_tar_gzip ;;
         lz) do_tar_lz4 ;;
+        zstd) do_tar_zstd ;;
         *)
             shout "Unknown compression type"
             shout "all compression: lz,gzip,bzip2"
@@ -546,6 +548,20 @@ do_tar_bzip() {
         "$chroot_dir" \
         "/bin/bash /j-packer.sh ${TARGET_FILE}"
     $SUDO cp "${chroot_dir}/${TARGET_FILE}.tar.xz" out
+}
+
+do_tar_zstd() {
+    shout "installing zstd..."
+    install_pkg "zstd"
+    shout "starting compression..."
+    $SUDO cp "plugins/zst-packer.sh" "${chroot_dir}"
+    do_chroot_ae \
+        "$chroot_dir" \
+        "chmod +x /zst-packer.sh"
+    do_chroot_ae \
+        "$chroot_dir" \
+        "/bin/bash /zst-packer.sh ${TARGET_FILE}"
+    $SUDO cp "${chroot_dir}/${TARGET_FILE}.zst" out
 }
 
 run_cmd() {

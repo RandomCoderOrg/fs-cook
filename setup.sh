@@ -4,7 +4,7 @@
 if [ "$(uname -o)" = "Android" ]; then
     echo "Running in Termux"
     apt update 
-    apt install debootstrap which -y 
+    apt install debootstrap which proot -y 
 else 
     if [ "$(id -u)" != "0" ]; then
         if ! command -v sudo >/dev/null 2>&1; then
