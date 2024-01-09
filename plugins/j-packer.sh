@@ -7,7 +7,7 @@ tar \
     --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/mnt/*,/media/*,/lost+found/*} \
     --exclude="*.l2s.*" \
     --exclude=/${0} \
-    --exclude="/${target}.tar.gz" \
+    --exclude="/${target}.tar.xz" \
     --exclude-caches-all \
     --one-file-system \
     -cpf \
