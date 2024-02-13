@@ -24,7 +24,7 @@
 # SOFTWARE.
 
 export ROOT_DIR
-export BUILD_PALTFORM="linux"
+export BUILD_PLATFORM="linux"
 
 _c_magneta="\e[95m"
 _c_green="\e[32m"
@@ -40,12 +40,12 @@ msg()    { echo -e "${*} \e[0m" >&2;:;}
 
 # Check if environment is Termux
 if [ "$(uname -o)" = "Android" ]; then
-    export FS_COOK_PLATFORM="termux"
+    export BUILD_PLATFORM="termux"
 fi
 
 # sudo check
 if [ "$(id -u)" != "0" ]; then
-    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
         SUDO=""
     else
         if command -v sudo &>/dev/null; then
@@ -111,7 +111,7 @@ do_mount() {
 
 do_unmount()
 {
-    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
       lshout "Skip unmount for termux"
     else
       local chroot_dir=$1
@@ -241,7 +241,7 @@ foreign_arch() {
 
 includes_packages() {
     # comma sperated values
-    includes="bzip2 pv ${INCLUDE_PACKAGES}"
+    includes="bzip2 pv openssl zstd ${INCLUDE_PACKAGES}"
     # environment variable INCLUDE_PACKAGES
     export includes
     x=0
@@ -266,7 +266,7 @@ do_build() {
     foreign_arch "$arch"
 
     #Disable cross architecture building in Termux
-    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
         case $worker_arch in
             aarch64) termux_arch="arm64" ;;
             arm*) termux_arch="armhf" ;;
@@ -322,11 +322,10 @@ do_build() {
         _debootstrap=$(which debootstrap)
     fi
 
-    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
         dpkg_depends_on debootstrap
         _debootstrap="$(which debootstrap)"
         FOREIGN=""
-        ENABLE_USER_SETUP=false
     fi
 
     (
@@ -340,7 +339,7 @@ do_build() {
             $MIRROR
     ) || die "Couldn't debootstrap..."
 
-    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
         lshout "Skipping second stage for termux"
         arch_translate "$arch"
     else
@@ -411,7 +410,6 @@ setup_user() {
     cp plugins/setup-user.sh $chroot_dir
     sed -i "s/FS_USER/$FS_USER/g" $chroot_dir/setup-user.sh
     sed -i "s/FS_PASS/$FS_PASS/g" $chroot_dir/setup-user.sh
-    install_pkg "openssl"
     run_cmd "chmod +x /setup-user.sh"
     run_cmd "/bin/bash /setup-user.sh"
     run_cmd "rm -rf /setup-user.sh"
@@ -471,7 +469,7 @@ do_chroot_root_ae() {
 }
 
 do_chroot_ae() {
-    if [ $BUILD_PALTFORM == "termux" ]; then
+    if [ $BUILD_PLATFORM == "termux" ]; then
         do_chroot_proot_ae "$@"
     else
         do_chroot_root_ae "$@"
@@ -484,7 +482,7 @@ do_compress() {
     export chroot_dir=$1
     TARGET_FILE="$(basename ${chroot_dir})"
     
-    if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
         if [ ! -d "$chroot_dir" ]; then
             lshout "Skip compressing $chroot_dir "
             return 0
@@ -499,7 +497,7 @@ do_compress() {
         zstd) do_tar_zstd ;;
         *)
             shout "Unknown compression type"
-            shout "all compression: lz,gzip,bzip2"
+            shout "all compression: lz,gzip,bzip2,zstd"
             die "Giving up!!"
             ;;
         esac
@@ -605,8 +603,7 @@ install_pkg()
 
 banner
 
-if [ "$FS_COOK_PLATFORM" == "termux" ]; then
+if [ "$BUILD_PLATFORM" == "termux" ]; then
     lshout "Running on termux"
-    BUILD_PALTFORM="termux"
 fi
 
