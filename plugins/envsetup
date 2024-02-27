@@ -408,8 +408,8 @@ do_qemu_user_emulation() {
 setup_user() {
     shout "Setting up user"
     cp plugins/setup-user.sh $chroot_dir
-    sed -i "s/FS_USER/$FS_USER/g" $chroot_dir/setup-user.sh
-    sed -i "s/FS_PASS/$FS_PASS/g" $chroot_dir/setup-user.sh
+    sed -i s/'$FS_USER'/$FS_USER/g $chroot_dir/setup-user.sh
+    sed -i s/'$FS_PASS'/$FS_PASS/g $chroot_dir/setup-user.sh
     run_cmd "chmod +x /setup-user.sh"
     run_cmd "/bin/bash /setup-user.sh"
     run_cmd "rm -rf /setup-user.sh"
