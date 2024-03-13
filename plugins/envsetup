@@ -241,7 +241,7 @@ foreign_arch() {
 
 includes_packages() {
     # comma sperated values
-    includes="bzip2 pv openssl zstd ${INCLUDE_PACKAGES}"
+    includes="bzip2 pv openssl ${INCLUDE_PACKAGES}"
     # environment variable INCLUDE_PACKAGES
     export includes
     x=0
