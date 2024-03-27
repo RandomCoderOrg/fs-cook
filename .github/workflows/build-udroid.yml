@@ -42,36 +42,3 @@ jobs:
         with:
           name: jammy-raw-amd64
           path: jammy-amd64
-  BuildKineticRaw:
-    name: build Kinetc (22.10)
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout repository
-        uses: actions/checkout@v3
-
-      - name: Docker Setup QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Satify Dependencies
-        run: sudo apt-get update; sudo apt-get install git build-essential binfmt-support qemu-user-static debootstrap -y
-
-      - name: Trigger fs-cook
-        run: sudo bash .github/scripts/build-kinetic.sh
-
-      - name: save arm64 builds
-        uses: actions/upload-artifact@v2
-        with:
-          name: kinetic-raw-arm64
-          path: kinetic-arm64
-
-      - name: save armhf builds
-        uses: actions/upload-artifact@v2
-        with:
-          name: kinetic-raw-armhf
-          path: kinetic-armhf
-
-      - name: save amd64 builds
-        uses: actions/upload-artifact@v2
-        with:
-          name: kinetic-raw-amd64
-          path: kinetic-amd64

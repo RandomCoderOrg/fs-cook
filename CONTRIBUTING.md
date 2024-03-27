@@ -8,8 +8,7 @@ fs-cooks uses debootstrap to pull core Linux packages to build linux traballs, a
 the top-level contains some example build scripts which are lightweight to build and beginning of directories
 ```
 .
-├── build-hirsute-raw.sh -> cook.sh
-├── build-impish-raw.sh
+├── build-jammy.sh -> cook.sh
 ├── cook.sh
 ├── build
 ├── core
@@ -26,8 +25,6 @@ here:
 <hr>
 
 **important files/folders to notice**
-###### `~/core/defaults`
-defaults folder contains some heavy templates to build DE ready tarballs like mate,xfce4,kde
 ###### `~/plugins/envsetup`
 contains functions that can be used for cmd line building and integrating in scripts
 - useful functions in `envsetup`:
@@ -50,12 +47,11 @@ do_build "out/udroid-test" "arm64"
 
 ```bash
 source plugins/envsetup
-SUITE=impish
+SUITE=jammy
 do_build "out/fs" "arm64"
 ```
 ### Quick build scripts
-- `build-impish-raw.sh`: to build raw ubuntu 21.10 tarballs
-- `build-hirsute-raw.sh`: to build raw ubuntu 21.04 tarballs
+- `build-jammy.sh`: to build raw ubuntu 22.04 tarballs
 > others are experimental ( may break things )
 
 ### functions ( <kbd>v1.0</kbd> )
@@ -74,11 +70,15 @@ do_build "out/fs" "arm64"
 - `do_second_stage()`: if foreign arch triggers second stage
 - - `do_qemu_user_emulation()` sets up qemu binaries in chroot
 - `do_chroot_ae()`: to run command in chroot
-- - `run_cmd()`: alternative for `do_chroot_are()`
+- - `do_chroot_proot_ae` : use **proot** instead of chroot in termux
+- - `run_cmd()`: alternative for `do_chroot_ae()`
+- - `run_shell_script()` : to run a specific script, alternative for `do_chroot_ae()`
+- - `install_pkg()` : to install a specific package inside chroot, alternative for `do_chroot_ae()`
 - `do_compress()`:  takes care of compressing tarballs without messy device file
 - - `do_tar_gzip()`: to compress in gzip format
 - - `do_tar_bzip()`: to compress in bzip format
 - - `do_tar_lz4()`: to compress in lzip/lz4 format
+- - `do_tar_zstd()` : to compress in zstd format
 - `arch_translate()`: takes care of translating arch to find qemu static builds
 - `COPY()`: to copy files to target filesystem
 - `die()`: to echo an error message & exit if `ENABLE_EXIT` is set to true

@@ -7,10 +7,10 @@ tar \
     --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/mnt/*,/media/*,/lost+found/*} \
     --exclude="*.l2s.*" \
     --exclude=/${0} \
-    --exclude="/${target}.tar.lz" \
+    --exclude="/${target}.zst" \
     --exclude-caches-all \
     --one-file-system \
     -cpf \
      - / -P \
     | pv -s $(($(du -skx / | awk '{print $1}') * 1024)) |\
-     lz4 -9 > /"${target}".tar.lz # use high compression
+     zstd > /"${target}".zst
