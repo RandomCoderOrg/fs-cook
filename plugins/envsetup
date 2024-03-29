@@ -24,22 +24,7 @@
 # SOFTWARE.
 
 export ROOT_DIR
-
-if [ -z $ENABLE_USER_SETUP ]; then
-    export ENABLE_USER_SETUP=false
-fi
-
-ROOT_DIR="$(git rev-parse --show-toplevel)"
-
-# sudo check
-if [ "$(id -u)" != "0" ]; then
-    if ! command -v sudo >/dev/null 2>&1; then
-        echo "This script requires sudo or root privileges but none present."
-        exit 1
-    else
-        SUDO="$(command -v sudo)"
-    fi
-fi
+export BUILD_PLATFORM="linux"
 
 _c_magneta="\e[95m"
 _c_green="\e[32m"
@@ -52,6 +37,30 @@ warn()   { echo -e "${_c_red}[W] ${*}${RST}";:;}
 shout()  { echo -e "${_c_blue}[-] ${*}${RST}";:;}
 lshout() { echo -e "${_c_blue}-> ${*}${RST}";:;}
 msg()    { echo -e "${*} \e[0m" >&2;:;}
+
+# Check if environment is Termux
+if [ "$(uname -o)" = "Android" ]; then
+    export BUILD_PLATFORM="termux"
+fi
+
+# sudo check
+if [ "$(id -u)" != "0" ]; then
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
+        SUDO=""
+    else
+        if command -v sudo &>/dev/null; then
+            SUDO="sudo"
+        else
+            die "This script requires root privileges"
+        fi
+    fi
+fi
+
+if [ -z $ENABLE_USER_SETUP ]; then
+    export ENABLE_USER_SETUP=false
+fi
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 trim_quotes() {
     # Usage: trim_quotes "string"
@@ -102,24 +111,28 @@ do_mount() {
 
 do_unmount()
 {
-    local chroot_dir=$1
-    points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
-    see_for_directory "$points"
-    if is_mounted "$chroot_dir/dev"; then
-      shout "unmounting: $chroot_dir/dev"
-      $SUDO umount "$chroot_dir"/dev/pts
-      $SUDO umount "$chroot_dir"/dev
-    fi
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
+      lshout "Skip unmount for termux"
+    else
+      local chroot_dir=$1
+      points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
+      see_for_directory "$points"
+      if is_mounted "$chroot_dir/dev"; then
+        shout "unmounting: $chroot_dir/dev"
+        $SUDO umount "$chroot_dir"/dev/pts
+        $SUDO umount "$chroot_dir"/dev
+      fi
 
-    if is_mounted "$chroot_dir"/proc; then
-      shout "unmounting: $chroot_dir/proc"
-      $SUDO umount $chroot_dir/proc
-    fi
+      if is_mounted "$chroot_dir"/proc; then
+        shout "unmounting: $chroot_dir/proc"
+        $SUDO umount $chroot_dir/proc
+      fi
 
-    if is_mounted "$chroot_dir"/sys; then
-      shout "unmounting: $chroot_dir/sys"
-      $SUDO umount "$chroot_dir"/sys
-    fi
+      if is_mounted "$chroot_dir"/sys; then
+        shout "unmounting: $chroot_dir/sys"
+        $SUDO umount "$chroot_dir"/sys
+      fi
+    fi 
 }
 
 is_mounted() {
@@ -208,7 +221,9 @@ see_for_directory() {
 no_to_directory() {
     dir="$1"
     if [ -d "$dir" ]; then
-        if ! $NO_DIR_CHECK_OVERRIDE; then
+        if [ "$NO_DIR_CHECK_OVERRIDE" == "true" ]; then
+            return 0
+        else
             die "directory exits: $dir"
         fi
     fi
@@ -226,12 +241,12 @@ foreign_arch() {
 
 includes_packages() {
     # comma sperated values
-    includes="bzip2 pv ${INCLUDE_PACKAGES}"
+    includes="bzip2 pv openssl ${INCLUDE_PACKAGES}"
     # environment variable INCLUDE_PACKAGES
     export includes
     x=0
     for item in $includes; do
-        include_final="$item"
+        #include_final="$item"
         ((x = x + 1))
     done
     shout "$x includes processed "
@@ -248,8 +263,25 @@ do_build() {
         export DISABLE_USER_SETUP=false
     fi
 
-    includes_packages
     foreign_arch "$arch"
+
+    #Disable cross architecture building in Termux
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
+        case $worker_arch in
+            aarch64) termux_arch="arm64" ;;
+            arm*) termux_arch="armhf" ;;
+            amd64|x86_64) termux_arch="amd64" ;;
+            *) die "Unknown architecture" ;;
+        esac
+        if [ "$termux_arch" != "$arch" ]; then
+            lshout "Skip building $target_dir for termux"
+            return 0
+        else
+            lshout "Building on Termux"
+        fi
+    fi
+    
+    includes_packages
     no_to_directory "$target_dir"
 
     export chroot_dir
@@ -290,20 +322,31 @@ do_build() {
         _debootstrap=$(which debootstrap)
     fi
 
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
+        dpkg_depends_on debootstrap
+        _debootstrap="$(which debootstrap)"
+        FOREIGN=""
+    fi
+
     (
         $SUDO $_debootstrap \
             $FOREIGN \
             --arch="$arch" \
             --no-check-gpg \
-            --include="${include_final}" \
+            --include="${includes}" \
             "$suite" \
             "$target_dir" \
             $MIRROR
     ) || die "Couldn't debootstrap..."
 
-    do_second_stage "$target_dir" "$arch"
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
+        lshout "Skipping second stage for termux"
+        arch_translate "$arch"
+    else
+        do_second_stage "$target_dir" "$arch"
+    fi
 
-    if $ENABLE_USER_SETUP; then
+    if [ "$ENABLE_USER_SETUP" == "true" ]; then
         setup_user
     fi
 
@@ -362,7 +405,56 @@ do_qemu_user_emulation() {
     fi
 }
 
-do_chroot_ae() {
+setup_user() {
+    shout "Setting up user"
+    cp plugins/setup-user.sh $chroot_dir
+    sed -i s/'$FS_USER'/$FS_USER/g $chroot_dir/setup-user.sh
+    sed -i s/'$FS_PASS'/$FS_PASS/g $chroot_dir/setup-user.sh
+    run_cmd "chmod +x /setup-user.sh"
+    run_cmd "/bin/bash /setup-user.sh"
+    run_cmd "rm -rf /setup-user.sh"
+}
+
+do_chroot_proot_ae() {
+    dpkg_depends_on proot
+    local chroot_dir=$1
+    shift
+    local cmd_string=$*
+    local root_fs_path=${chroot_dir}
+    
+    unset LD_PRELOAD
+    proot \
+        --link2symlink \
+        --sysvipc \
+        --kill-on-exit \
+        -b /system \
+        -b /sys \
+        -b /proc \
+        -b /dev \
+        -b /dev/urandom:/dev/random \
+        -b /proc/self/fd/1:/dev/stdout \
+        -b /proc/self/fd/2:/dev/stderr \
+        -b /proc/self/fd/0:/dev/stdin \
+        -b /proc/self/fd:/dev/fd \
+        -b /data/data/com.termux/files/usr \
+        -b /data/data/com.termux/files/home \
+        -b /data/data/com.termux/cache \
+        -b /storage/self/primary:/sdcard \
+        -b "${root_fs_path}"/tmp:/dev/shm \
+        --root-id \
+        --cwd=/root -L \
+        --kernel-release=5.4.0-faked \
+        --rootfs="${root_fs_path}" \
+            /usr/bin/env -i \
+            HOME=/root \
+            PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin \
+            TERM="$TERM" \
+            LANG=C.UTF-8 \
+            $cmd_string
+
+}
+
+do_chroot_root_ae() {
     local chroot_dir=$1
     shift
     local command=$*
@@ -376,20 +468,36 @@ do_chroot_ae() {
     fi
 }
 
+do_chroot_ae() {
+    if [ $BUILD_PLATFORM == "termux" ]; then
+        do_chroot_proot_ae "$@"
+    else
+        do_chroot_root_ae "$@"
+    fi
+}
+
 do_compress() {
     #compression
     export TARGET_FILE
     export chroot_dir=$1
     TARGET_FILE="$(basename ${chroot_dir})"
+    
+    if [ "$BUILD_PLATFORM" == "termux" ]; then
+        if [ ! -d "$chroot_dir" ]; then
+            lshout "Skip compressing $chroot_dir "
+            return 0
+        fi 
+    fi
 
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
         case $OVERRIDER_COMPRESSION_TYPE in
         bzip2) do_tar_bzip ;;
         gzip) do_tar_gzip ;;
         lz) do_tar_lz4 ;;
+        zstd) do_tar_zstd ;;
         *)
             shout "Unknown compression type"
-            shout "all compression: lz,gzip,bzip2"
+            shout "all compression: lz,gzip,bzip2,zstd"
             die "Giving up!!"
             ;;
         esac
@@ -440,6 +548,20 @@ do_tar_bzip() {
     $SUDO cp "${chroot_dir}/${TARGET_FILE}.tar.xz" out
 }
 
+do_tar_zstd() {
+    shout "installing zstd..."
+    install_pkg "zstd"
+    shout "starting compression..."
+    $SUDO cp "plugins/zst-packer.sh" "${chroot_dir}"
+    do_chroot_ae \
+        "$chroot_dir" \
+        "chmod +x /zst-packer.sh"
+    do_chroot_ae \
+        "$chroot_dir" \
+        "/bin/bash /zst-packer.sh ${TARGET_FILE}"
+    $SUDO cp "${chroot_dir}/${TARGET_FILE}.zst" out
+}
+
 run_cmd() {
     local command=$*
     do_chroot_ae "$chroot_dir" "$command"
@@ -480,3 +602,8 @@ install_pkg()
 }
 
 banner
+
+if [ "$BUILD_PLATFORM" == "termux" ]; then
+    lshout "Running on termux"
+fi
+

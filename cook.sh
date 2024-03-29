@@ -72,4 +72,4 @@ do_unmount 	    "${frn}-armhf"
 do_unmount 	    "${frn}-amd64"
 
 shout "Build Complete.."
-ls ${frn}*tar*
+ls ${frn}*.*
