@@ -18,7 +18,7 @@ the top-level contains some example build scripts which are lightweight to build
 └── setup.sh
 ```
 here:
-- **build**: Contains scripts, Dockerfiles for building different variants
+- **build**: Contains scripts, Dockerfiles for building different variants (outdated)
 - **core**: contains binaries and different sources that used in the build process
 - **out**: All the filesystem and tarball packages are created here
 - **plugins**: contains scripts that combine core sources to make tarball building easy
@@ -26,20 +26,41 @@ here:
 
 **important files/folders to notice**
 ###### `~/plugins/envsetup`
-contains functions that can be used for cmd line building and integrating in scripts
+- contains functions that can be used for cmd line building and integrating in scripts
+- **Important** : use these functions after ```source plugins/envsetup```
 - useful functions in `envsetup`:
 
-<kbd>do_mount()</kbd>: mounts the rootfs directories in recursive after checking is directories already mounted
-> takes one argument: location of rootfs directorie
+<kbd>**do_mount()**</kbd>: mounts the rootfs directories in recursive after checking is directories already mounted
+
+> takes one argument: location of rootfs directory
 
 ```bash
 do_mount "/path/to/fs"
 ```
 
-<kbd>do_build()</kbd> bootstraps linux to a directories of specified arch
+<kbd>**do_build()**</kbd> bootstraps linux to a directories of specified arch
+
+> takes two arguments: `location of rootfs directory` | `arch`
+
 ```bash
 do_build "out/udroid-test" "arm64"
 ```
+> available architectures : `amd64` , `arm64` , `armhf`
+
+<kbd>**do_compress**()</kbd> compress the rootfs directory into an archive
+
+> takes one argument: name of rootfs directory 
+
+```bash
+# archiving into .tar.gz
+OVERRIDER_COMPRESSION_TYPE="gzip"
+# already default to "out/" directory
+do_compress "udroid-test"
+# output would be "out/udroid-test.tar.gz"
+```
+> default format is `bzip` ( .tar.xz )
+> others : `gzip` ( .tar.gz ) , `lz` ( .tar.lz ) , `zstd` ( .zst ) 
+
 ###### TODO ( need to write more )
 
 # AIM
@@ -68,12 +89,13 @@ do_build "out/fs" "arm64"
 - `includes_packages()`: takes care of extrapackges when a variable `INCLUDE_PACKAGES` is set with packages
 - `do_build()`: bootstraps linux to with target arch to target directorie
 - `do_second_stage()`: if foreign arch triggers second stage
-- - `do_qemu_user_emulation()` sets up qemu binaries in chroot
+- - `do_qemu_user_emulation()`: sets up qemu binaries in chroot
+- `setup_user()`: setup a user in chroot if `ENABLE_USER_SETUP` is set to true
 - `do_chroot_ae()`: to run command in chroot
-- - `do_chroot_proot_ae` : use **proot** instead of chroot in termux
+- - `do_chroot_proot_ae`: use **proot** instead of chroot in termux
 - - `run_cmd()`: alternative for `do_chroot_ae()`
-- - `run_shell_script()` : to run a specific script, alternative for `do_chroot_ae()`
-- - `install_pkg()` : to install a specific package inside chroot, alternative for `do_chroot_ae()`
+- - `run_shell_script()`: to run a specific script, alternative for `do_chroot_ae()`
+- - `install_pkg()`: to install a specific package inside chroot, alternative for `do_chroot_ae()`
 - `do_compress()`:  takes care of compressing tarballs without messy device file
 - - `do_tar_gzip()`: to compress in gzip format
 - - `do_tar_bzip()`: to compress in bzip format
@@ -88,6 +110,12 @@ do_build "out/fs" "arm64"
 
 ### Environment Variables
 - `ENABLE_EXIT` ( true | false ): to exit on error
+- `ENABLE_USER_SETUP` ( true | false ): to setup a user, using with `FS_USER` and `FS_PASS`
+```bash
+ENABLE_USER_SETUP=true
+FS_USER="your username"
+FS_PASS="your password"
+```
 - `INCLUDE_PACKAGES`: to set extra packages to install in the bootstrap process
 - `SUITE`: to set target suite to bootstrap
 
