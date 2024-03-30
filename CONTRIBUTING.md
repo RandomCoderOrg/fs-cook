@@ -32,7 +32,7 @@ here:
 
 <kbd>**do_mount()**</kbd>: mounts the rootfs directories in recursive after checking is directories already mounted
 
-> takes one argument: location of rootfs directory
+> takes one argument: `location of rootfs directory`
 
 ```bash
 do_mount "/path/to/fs"
@@ -49,13 +49,13 @@ do_build "out/udroid-test" "arm64"
 
 <kbd>**do_compress**()</kbd> compress the rootfs directory into an archive
 
-> takes one argument: name of rootfs directory 
+> takes one argument: `location of rootfs directory`
 
 ```bash
 # archiving into .tar.gz
 OVERRIDER_COMPRESSION_TYPE="gzip"
-# already default to "out/" directory
-do_compress "udroid-test"
+# compressing udroid-test directory 
+do_compress "out/udroid-test"
 # output would be "out/udroid-test.tar.gz"
 ```
 > default format is `bzip` ( .tar.xz )
