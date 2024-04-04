@@ -287,8 +287,12 @@ do_build() {
     export chroot_dir
     chroot_dir=$target_dir
 
+    if [[ ! $DEBOOTSTRAP_DIR ]]; then
+        export DEBOOTSTRAP_DIR="$ROOT_DIR/core/debootstrap-scripts"
+    fi
+
     if [ -n "$SUITE" ]; then
-            supported_suites="$(ls "${ROOT_DIR}"/core/debootstrap/scripts)"
+            supported_suites="$(ls $DEBOOTSTRAP_DIR/scripts)"
             suite_found=false
             for sts in $supported_suites; do
                 if [ "$sts" == "$SUITE" ]; then
@@ -320,10 +324,6 @@ do_build() {
         _debootstrap="$ROOT_DIR/core/debootstrap/debootstrap"
     else
         _debootstrap=$(which debootstrap)
-    fi
-
-    if ! $DEBOOTSTRAP_DIR; then
-        DEBOOTSTRAP_DIR="$ROOT_DIR/core/debootstrap"
     fi
 
     if [ "$BUILD_PLATFORM" == "termux" ]; then
