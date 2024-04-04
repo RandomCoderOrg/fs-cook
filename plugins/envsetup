@@ -322,6 +322,10 @@ do_build() {
         _debootstrap=$(which debootstrap)
     fi
 
+    if ! $DEBOOTSTRAP_DIR; then
+        DEBOOTSTRAP_DIR="$ROOT_DIR/core/debootstrap"
+    fi
+
     if [ "$BUILD_PLATFORM" == "termux" ]; then
         dpkg_depends_on debootstrap
         _debootstrap="$(which debootstrap)"
@@ -329,7 +333,9 @@ do_build() {
     fi
 
     (
-        $SUDO $_debootstrap \
+        # execute debootstrap with bash to skip changing file permission
+        # to executable
+        $SUDO bash $_debootstrap \
             $FOREIGN \
             --arch="$arch" \
             --no-check-gpg \
