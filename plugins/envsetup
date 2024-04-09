@@ -288,7 +288,11 @@ do_build() {
     chroot_dir=$target_dir
 
     if [[ ! $DEBOOTSTRAP_DIR ]]; then
-        if [ "$BUILD_PLATFORM" != "termux" ]; then
+        if [ "$BUILD_PLATFORM" == "termux" ]; then
+            # use default debootstrap directory in termux 
+            export DEBOOTSTRAP_DIR="$PREFIX/share/debootstrap"
+        else
+            # use custom debootstrap directory in linux 
             export DEBOOTSTRAP_DIR="$ROOT_DIR/core/debootstrap-scripts"
         fi
     fi
