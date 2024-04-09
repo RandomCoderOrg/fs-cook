@@ -288,7 +288,9 @@ do_build() {
     chroot_dir=$target_dir
 
     if [[ ! $DEBOOTSTRAP_DIR ]]; then
-        export DEBOOTSTRAP_DIR="$ROOT_DIR/core/debootstrap-scripts"
+        if [ "$BUILD_PLATFORM" != "termux" ]; then
+            export DEBOOTSTRAP_DIR="$ROOT_DIR/core/debootstrap-scripts"
+        fi
     fi
 
     if [ -n "$SUITE" ]; then
