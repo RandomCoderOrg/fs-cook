@@ -132,7 +132,7 @@ do_unmount()
         shout "unmounting: $chroot_dir/sys"
         $SUDO umount "$chroot_dir"/sys
       fi
-    fi 
+    fi
 }
 
 is_mounted() {
@@ -280,7 +280,7 @@ do_build() {
             lshout "Building on Termux"
         fi
     fi
-    
+
     includes_packages
     no_to_directory "$target_dir"
 
@@ -363,10 +363,10 @@ do_build() {
     if [ "$(type -t additional_setup)" == "function" ]; then
         additional_setup
     fi
-    
+
     shout "patching '/etc/os-release'"
     sed -i 's/Ubuntu/Ubuntu On Android (Udroid)/g' $target_dir/etc/os-release
-    
+
     if ! $NO_COMPRESSION; then
         do_compress "$chroot_dir"
     fi
@@ -404,6 +404,10 @@ do_second_stage() {
 
     do_qemu_user_emulation
     $SUDO service binfmt-support start
+
+    # unset DEBOOTSTRAP_DIR before second stage
+    # this makes debootstrap to look for scripts inside its build filesystem
+    unset DEBOOTSTRAP_DIR
     do_chroot_ae "$chroot_dir" /bin/bash /debootstrap/debootstrap --second-stage
 }
 
@@ -431,7 +435,7 @@ do_chroot_proot_ae() {
     shift
     local cmd_string=$*
     local root_fs_path=${chroot_dir}
-    
+
     unset LD_PRELOAD
     proot \
         --link2symlink \
@@ -491,12 +495,12 @@ do_compress() {
     export TARGET_FILE
     export chroot_dir=$1
     TARGET_FILE="$(basename ${chroot_dir})"
-    
+
     if [ "$BUILD_PLATFORM" == "termux" ]; then
         if [ ! -d "$chroot_dir" ]; then
             lshout "Skip compressing $chroot_dir "
             return 0
-        fi 
+        fi
     fi
 
     if [ -n "$OVERRIDER_COMPRESSION_TYPE" ]; then
