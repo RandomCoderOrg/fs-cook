@@ -349,7 +349,9 @@ do_build() {
         lshout "Skipping second stage for termux"
         arch_translate "$arch"
     else
-        do_second_stage "$target_dir" "$arch"
+        if $foreign_worker; then
+            do_second_stage "$target_dir" "$arch"
+        fi
     fi
 
     if [ "$ENABLE_USER_SETUP" == "true" ]; then
