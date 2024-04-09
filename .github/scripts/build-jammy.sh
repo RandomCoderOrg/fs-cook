@@ -60,9 +60,12 @@ EOF
 
 # set up pv
 lshout "Setting up pv..."
-cp $ROOT_DIR/core/pv/pv-${t_arch}.deb $chroot_dir
-run_cmd "dpkg -i /pv-${t_arch}.deb"
-run_cmd "rm /pv-${t_arch}.deb"
+# cp $ROOT_DIR/core/pv/pv-${t_arch}.deb $chroot_dir
+# run_cmd "dpkg -i /pv-${t_arch}.deb"
+# run_cmd "rm /pv-${t_arch}.deb"
+run_cmd "apt update"
+run_cmd "apt install pv -y"
+run_cmd "apt clean"
 
 # clean any archive if exits
 apt-get clean
