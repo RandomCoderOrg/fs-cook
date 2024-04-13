@@ -236,6 +236,8 @@ foreign_arch() {
     if [ "$arch" != "$worker_arch" ]; then
         FOREIGN="--foreign"
         foreign_worker=true
+    else
+        unset FOREIGN
     fi
 }
 
