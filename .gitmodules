@@ -1,0 +1,4 @@
+[submodule "core/debootstrap"]
+	path = core/debootstrap
+	url = https://git.launchpad.net/ubuntu/+source/debootstrap
+	branch = ubuntu/devel
