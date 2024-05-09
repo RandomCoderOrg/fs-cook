@@ -56,10 +56,6 @@ if [ "$(id -u)" != "0" ]; then
     fi
 fi
 
-if [ -z $ENABLE_USER_SETUP ]; then
-    export ENABLE_USER_SETUP=false
-fi
-
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 trim_quotes() {
@@ -220,8 +216,11 @@ see_for_directory() {
 
 no_to_directory() {
     dir="$1"
+    if [ -z $NO_DIR_CHECK_OVERRIDE ]; then
+        export NO_DIR_CHECK_OVERRIDE=false
+    fi
     if [ -d "$dir" ]; then
-        if [ "$NO_DIR_CHECK_OVERRIDE" == "true" ]; then
+        if $NO_DIR_CHECK_OVERRIDE; then
             return 0
         else
             die "directory exits: $dir"
@@ -248,7 +247,6 @@ includes_packages() {
     export includes
     x=0
     for item in $includes; do
-        #include_final="$item"
         ((x = x + 1))
     done
     shout "$x includes processed "
@@ -261,13 +259,13 @@ do_build() {
 
     local NO_COMPRESSION
 
-    if [ -z "$DISABLE_USER_SETUP" ]; then
-        export DISABLE_USER_SETUP=false
+    if [ -z $ENABLE_USER_SETUP ]; then
+        export ENABLE_USER_SETUP=false
     fi
 
     foreign_arch "$arch"
 
-    #Disable cross architecture building in Termux
+    # disable cross architecture building in Termux
     if [ "$BUILD_PLATFORM" == "termux" ]; then
         case $worker_arch in
             aarch64) termux_arch="arm64" ;;
@@ -362,7 +360,7 @@ do_build() {
         fi
     fi
 
-    if [ "$ENABLE_USER_SETUP" == "true" ]; then
+    if $ENABLE_USER_SETUP; then
         setup_user
     fi
 
