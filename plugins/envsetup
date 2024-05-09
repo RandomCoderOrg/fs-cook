@@ -431,6 +431,11 @@ setup_user() {
     run_cmd "chmod +x /setup-user.sh"
     run_cmd "/bin/bash /setup-user.sh"
     run_cmd "rm -rf /setup-user.sh"
+    if $(ls $chroot_dir/home/$FS_USER); then
+        shout "User created : $FS_USER"
+    else
+        shout "User create failed..."
+    fi
 }
 
 do_chroot_proot_ae() {
