@@ -278,6 +278,7 @@ do_build() {
             return 0
         else
             lshout "Building on Termux"
+            dpkg_depends_on debootstrap
         fi
     fi
 
@@ -333,7 +334,6 @@ do_build() {
     fi
 
     if [ "$BUILD_PLATFORM" == "termux" ]; then
-        dpkg_depends_on debootstrap
         _debootstrap="$(which debootstrap)"
         FOREIGN=""
     fi
@@ -425,6 +425,8 @@ do_qemu_user_emulation() {
 
 setup_user() {
     shout "Setting up user"
+    [[ -z $FS_USER ]] && warn "no username provided, skipping user setup.." && return 0
+    [[ -z $FS_PASS ]] && warn "no password provided, skipping user setup.." && return 0
     cp plugins/setup-user.sh $chroot_dir
     sed -i s/'$FS_USER'/$FS_USER/g $chroot_dir/setup-user.sh
     sed -i s/'$FS_PASS'/$FS_PASS/g $chroot_dir/setup-user.sh
