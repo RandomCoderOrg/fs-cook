@@ -8,7 +8,7 @@ on:
 
 jobs:
     BuidJammyRaw:
-        name: build Jammy
+        name: build latest
         runs-on: ubuntu-latest
         steps:
             - name: checkout repo
@@ -28,19 +28,19 @@ jobs:
               run: sudo bash .github/scripts/build-udroid.sh
 
             - name: save arm64 builds
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
-                  name: jammy-raw-arm64
-                  path: jammy-arm64
+                  name: latest-test-raw-arm64
+                  path: latest-test-arm64
 
             - name: save armhf builds
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
-                  name: jammy-raw-armhf
-                  path: jammy-armhf
+                  name: latest-test-raw-armhf
+                  path: latest-test-armhf
 
             - name: save amd64 builds
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
-                  name: jammy-raw-amd64
-                  path: jammy-amd64
+                  name: latest-test-raw-amd64
+                  path: latest-test-amd64

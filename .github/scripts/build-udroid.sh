@@ -72,17 +72,17 @@ apt-get clean
 
 }
 
-do_build     "$PREFIX-arm64" arm64
-do_build     "$PREFIX-armhf" armhf
-do_build     "$PREFIX-amd64" amd64
+do_build     "latest-test-arm64" arm64
+do_build     "latest-test-armhf" armhf
+do_build     "latest-test-amd64" amd64
 
-do_compress  "$PREFIX-arm64"
-do_compress  "$PREFIX-armhf"
-do_compress  "$PREFIX-amd64"
+do_compress  "latest-test-arm64"
+do_compress  "latest-test-armhf"
+do_compress  "latest-test-amd64"
 
-do_unmount   "$PREFIX-arm64"
-do_unmount   "$PREFIX-armhf"
-do_unmount   "$PREFIX-amd64"
+do_unmount   "latest-test-arm64"
+do_unmount   "latest-test-armhf"
+do_unmount   "latest-test-amd64"
 
 shout "setting up artifacts for GitHub"
 msg "creating $SUITE-{arm64,amd64,armhf} directories"
