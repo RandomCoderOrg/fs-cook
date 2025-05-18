@@ -1,46 +1,46 @@
 name: build-udroid
 on:
-  push:
-    paths:
-      - "**.sh"
-      - "**.yml"
-  workflow_dispatch: { }
+    push:
+        paths:
+            - "**.sh"
+            - "**.yml"
+    workflow_dispatch: {}
 
 jobs:
-  BuidJammyRaw:
-    name: build Jammy
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout repo
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
+    BuidJammyRaw:
+        name: build Jammy
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout repo
+              uses: actions/checkout@v3
+              with:
+                  submodules: recursive
 
-      - name: Docker Setup QEMU
-        uses: docker/setup-qemu-action@v2
+            - name: Docker Setup QEMU
+              uses: docker/setup-qemu-action@v2
 
-      - name: Satify Dependencies
-        run: |
-           sudo apt-get update
-           sudo apt-get install git build-essential binfmt-support qemu-user-static debootstrap -y
+            - name: Satify Dependencies
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install git build-essential binfmt-support qemu-user-static debootstrap -y
 
-      - name: Trigger fs-cook
-        run: sudo bash .github/scripts/build-jammy.sh
+            - name: Trigger fs-cook
+              run: sudo bash .github/scripts/build-latest.sh
 
-      - name: save arm64 builds
-        uses: actions/upload-artifact@v2
-        with:
-          name: jammy-raw-arm64
-          path: jammy-arm64
+            - name: save arm64 builds
+              uses: actions/upload-artifact@v2
+              with:
+                  name: jammy-raw-arm64
+                  path: jammy-arm64
 
-      - name: save armhf builds
-        uses: actions/upload-artifact@v2
-        with:
-          name: jammy-raw-armhf
-          path: jammy-armhf
+            - name: save armhf builds
+              uses: actions/upload-artifact@v2
+              with:
+                  name: jammy-raw-armhf
+                  path: jammy-armhf
 
-      - name: save amd64 builds
-        uses: actions/upload-artifact@v2
-        with:
-          name: jammy-raw-amd64
-          path: jammy-amd64
+            - name: save amd64 builds
+              uses: actions/upload-artifact@v2
+              with:
+                  name: jammy-raw-amd64
+                  path: jammy-amd64
