@@ -6,7 +6,7 @@ export OVERRIDER_COMPRESSION_TYPE
 export ENABLE_EXIT
 export ENABLE_USER_SETUP
 
-SUITE="questing"
+SUITE="resolute"
 frn="out/$SUITE-raw"
 OVERRIDER_COMPRESSION_TYPE="gzip"
 ENABLE_EXIT=true

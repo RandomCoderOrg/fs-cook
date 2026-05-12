@@ -7,7 +7,7 @@ on:
     workflow_dispatch: {}
 
 jobs:
-    BuidJammyRaw:
+    BuildTestRaw:
         name: build latest
         runs-on: ubuntu-latest
         steps:
