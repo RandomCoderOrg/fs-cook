@@ -113,21 +113,19 @@ do_unmount()
       local chroot_dir=$1
       points="$chroot_dir/dev $chroot_dir/sys $chroot_dir/proc"
       see_for_directory "$points"
-      if is_mounted "$chroot_dir/dev"; then
-        shout "unmounting: $chroot_dir/dev"
-        $SUDO umount "$chroot_dir"/dev/pts
-        $SUDO umount "$chroot_dir"/dev
-      fi
+      _unmount "$chroot_dir"/dev/pts
+      _unmount "$chroot_dir"/dev
+      _unmount "$chroot_dir"/proc
+      _unmount "$chroot_dir"/sys
+    fi
+}
 
-      if is_mounted "$chroot_dir"/proc; then
-        shout "unmounting: $chroot_dir/proc"
-        $SUDO umount $chroot_dir/proc
-      fi
+_unmount() {
+    local _path=$1
 
-      if is_mounted "$chroot_dir"/sys; then
-        shout "unmounting: $chroot_dir/sys"
-        $SUDO umount "$chroot_dir"/sys
-      fi
+    if is_mounted "$_path"; then
+        shout "unmounting: $_path"
+        $SUDO umount "$_path"
     fi
 }
 
@@ -290,10 +288,10 @@ do_build() {
 
     if [[ ! $DEBOOTSTRAP_DIR ]]; then
         if [ "$BUILD_PLATFORM" == "termux" ]; then
-            # use default debootstrap directory in termux 
+            # use default debootstrap directory in termux
             export DEBOOTSTRAP_DIR="$PREFIX/share/debootstrap"
         else
-            # use custom debootstrap directory in linux 
+            # use custom debootstrap directory in linux
             export DEBOOTSTRAP_DIR="$ROOT_DIR/core/debootstrap-scripts"
         fi
     fi
@@ -631,4 +629,3 @@ banner
 if [ "$BUILD_PLATFORM" == "termux" ]; then
     lshout "Running on termux"
 fi
-
